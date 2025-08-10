@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environment
+jarvis_env/
+venv/
+env/
+ENV/
+
+# API Keys & Sensitive Data
+.env
+*.key
+api_keys.txt
+secrets.json
+
+# Audio Files (temporary)
+*.mp3
+*.wav
+jarvis_response.*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Personal Configuration
+config/personal_settings.json
+my_api_keys.py
+
+# Logs
+*.log
+logs/
+
+node_modules/
+
+# AI Models (large files - download separately)
+models/
+*.gguf

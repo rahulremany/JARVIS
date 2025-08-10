@@ -1,0 +1,53 @@
+routing:
+  escalate_tags: 
+    - "multi_step_reasoning"
+    - "long_tool_plan"
+  hard_keywords:
+    - "multi-step"
+    - "full design"
+    - "long plan"
+    - "refactor large file"
+    - "architect"
+    - "comprehensive"
+    - "detailed analysis"
+    - "compare multiple"
+    - "research"
+    - "write a report"
+    - "create a document"
+    - "plan a project"
+  default_class: "normal"
+
+models:
+  router:
+    candidates: ["llama3.1:8b-instruct-q4_K_M"]
+    max_tokens: 32
+    ctx: 512
+    temperature: 0.0
+    timeout_ms: 2000
+  
+  primary:
+    candidates: ["llama3.1:8b-instruct-q4_K_M"]
+    max_tokens: 256
+    ctx: 1536
+    temperature: 0.2
+    timeout_ms: 8000
+  
+  heavy:
+    candidates_cpu: ["mixtral:8x7b-instruct-q4_K_M"]
+    max_tokens: 512
+    ctx: 4096
+    temperature: 0.3
+    timeout_ms: 30000
+
+autotune:
+  first_token_threshold_ms: 1500
+  total_threshold_ms: 8000
+  success_rate_threshold: 0.85
+
+policy:
+  mode: "dev"
+  fallback_enabled: true
+  log_routing_decisions: true
+
+endpoints:
+  vllm_base_url: ""
