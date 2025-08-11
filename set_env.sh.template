@@ -1,0 +1,18 @@
+#!/bin/bash
+# JARVIS Environment Setup Script Template
+# 1. Copy this file to set_env.sh: cp set_env.sh.template set_env.sh
+# 2. Replace the placeholder values with your actual API keys
+# 3. Run: source set_env.sh
+
+export ELEVEN_API_KEY="your_elevenlabs_api_key_here"
+export PORCUPINE_ACCESS_KEY="your_porcupine_access_key_here"
+export JARVIS_VOICE_ID="your_voice_id_here"
+export OPENAI_API_KEY="your_openai_api_key_here"
+export MODE="dev"
+export LOG_LEVEL="info"
+export PORT="3000"
+
+echo "✅ JARVIS environment variables loaded"
+echo "🔑 ELEVEN_API_KEY: ${ELEVEN_API_KEY:0:10}..."
+echo "🔑 PORCUPINE_ACCESS_KEY: ${PORCUPINE_ACCESS_KEY:0:10}..."
+echo "🔑 OPENAI_API_KEY: ${OPENAI_API_KEY:0:10}..."

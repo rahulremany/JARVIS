@@ -2,34 +2,47 @@
 
 *"Yes sir, how may I assist you?"*
 
-A local-first, privacy-focused AI assistant inspired by Iron Man's JARVIS. Built with TypeScript for high performance, featuring voice activation, natural conversation, and deep system integration.
+A local-first, privacy-focused AI assistant inspired by Iron Man's JARVIS. Built with TypeScript for high performance, featuring voice activation, natural conversation, and deep system integration. Complete with integrated voice pipeline and intelligent conversation handling.
 
 ## Features
 
-- **🗣️ Voice-Activated**: Wake word detection with "Jarvis"
+- **🗣️ Voice-Activated**: Wake word detection with "Jarvis" using Porcupine
+- **🎤 Speech Recognition**: OpenAI Whisper integration for accurate transcription
+- **🔊 Text-to-Speech**: ElevenLabs integration for natural JARVIS voice
 - **🔐 Privacy-First**: All processing happens locally, no data leaves your device
-- **💬 Conversational**: Natural, human-like interactions with context awareness
+- **💬 Conversational**: Natural follow-up conversations with intelligent conversation ending detection
 - **⚡ High Performance**: Direct llama.cpp integration with Metal acceleration on Apple Silicon
-- **🔧 Extensible**: Modular TypeScript architecture for cross-platform deployment
+- **🔧 Extensible**: Modular TypeScript architecture with Python voice system integration
 - **🧠 Intelligent**: Tiered model system (router/primary/heavy) for optimal performance
+- **🛠️ Device Control**: Built-in device actions and automation capabilities
+- **🌐 Web Integration**: HTTP API endpoints for external integrations
 
 ## Quick Start
 
 ### Prerequisites
 - **Node.js** ≥18
+- **Python** 3.8+ with virtual environment
 - **macOS** (for Metal acceleration) or Linux
 - **GGUF models** (automatically validated on startup)
+- **API Keys**: ElevenLabs (TTS) and Porcupine (wake word detection)
 
 ### Installation
 
 1. **Clone and setup**:
    ```bash
-   git clone https://github.com/rahulremany/JARVIS.git
-   cd JARVIS
-   npm install  # Required: Installs all dependencies (~2 minutes)
+   git clone https://github.com/rahulremany/jarvis_ai.git
+   cd jarvis_ai
+   npm install  # Required: Installs all TypeScript dependencies (~2 minutes)
    ```
 
-2. **Download AI Models**:
+2. **Setup Python environment**:
+   ```bash
+   python3 -m venv jarvis_env
+   source jarvis_env/bin/activate  # On Windows: jarvis_env\Scripts\activate
+   pip install -r requirements.txt
+   ```
+
+3. **Download AI Models**:
    ```bash
    # Create models directory
    mkdir -p models
@@ -42,28 +55,74 @@ A local-first, privacy-focused AI assistant inspired by Iron Man's JARVIS. Built
    # Or download manually from: https://huggingface.co/bartowski/Meta-Llama-3.1-8B-Instruct-GGUF
    ```
 
-3. **Environment setup**:
+4. **Environment setup**:
    ```bash
+   # Copy the environment template and edit with your API keys
    cp env.example .env
-   # Edit .env with your API keys (ElevenLabs, Porcupine)
+   # Edit .env with your actual API keys:
+   # - ELEVEN_API_KEY (from ElevenLabs)
+   # - PORCUPINE_ACCESS_KEY (from Picovoice Console)
+   # - JARVIS_VOICE_ID (ElevenLabs voice ID)
+   # - OPENAI_API_KEY (if using OpenAI models)
    ```
 
-3. **Run in development**:
+5. **Start JARVIS (Two terminals)**:
+
+   **Terminal 1 - Backend**:
    ```bash
-   npm run dev
+   ./start_backend.sh
    ```
 
-4. **Health check**:
+   **Terminal 2 - Voice System**:
    ```bash
-   curl http://localhost:3000/health/summary
+   ./start_jarvis.sh
    ```
 
-### How to Run Bench
+## Usage
+
+### Voice Commands
+1. Say **"Jarvis"** to wake the system
+2. Speak your command or question
+3. Continue conversation without wake word for 10 seconds
+4. Say "that's all", "thank you", "goodbye", or "I'm done" to end conversation
+
+### Example Conversation Flow
+```
+You: "Jarvis, what's 2+2?"
+JARVIS: "4"
+You: "What about 5+5?" (no wake word needed!)
+JARVIS: "10"
+You: "Thank you, that's all"
+JARVIS: Returns to sleep mode
+```
+
+### Testing and Development
+
+#### Health Check
+```bash
+curl http://localhost:3000/health/summary
+```
+
+#### Run Benchmarks
 ```bash
 npm run bench
 ```
 
-### How to Point at vLLM
+#### Run Tests
+```bash
+npm test
+```
+
+#### Direct Chat API
+```bash
+curl -X POST http://localhost:3000/chat \
+  -H "Content-Type: application/json" \
+  -d '{"prompt": "Hello JARVIS", "session_id": "test"}'
+```
+
+### Configuration
+
+#### vLLM Heavy Model Setup
 Edit `config/model-policy.yaml` and set:
 ```yaml
 endpoints:
@@ -73,16 +132,27 @@ endpoints:
 ## Architecture
 
 ### Core Components
+
+#### TypeScript Backend
 - **LocalLlamaEngine**: Direct llama.cpp bindings with Metal acceleration
-- **VllmEngine**: Heavy model client for complex queries
-- **SessionManager**: KV-cache reuse and conversation context
+- **VllmEngine**: Heavy model client for complex queries via HTTP
+- **SessionManager**: KV-cache reuse and conversation context management
 - **Router**: Smart query classification (direct_command/trivial/normal/hard)
-- **EngineSelector**: Route queries to optimal models with fallback
+- **EngineSelector**: Route queries to optimal models with fallback logic
+- **ConversationHandler**: Manages TTS integration and conversation flow
+- **DeviceActions**: System automation and device control
+- **ToolExecutor**: Extensible tool system for various actions
+
+#### Python Voice System
+- **JARVISVoice**: ElevenLabs TTS integration with natural voice synthesis
+- **JARVISWakeSystem**: Porcupine wake word detection with "Jarvis" trigger
+- **JARVISWhisper**: OpenAI Whisper integration for speech-to-text
+- **ConversationManager**: Intelligent follow-up conversation handling
 
 ### Model Policy
-- **Router**: phi3:mini for quick classification
-- **Primary**: llama3.1:8b-instruct-q4_K_M for most queries  
-- **Heavy**: mixtral:8x7b models for complex reasoning (via vLLM)
+- **Router**: llama3.1:8b-instruct-q4_K_M for quick classification (512 context, 32 tokens max)
+- **Primary**: llama3.1:8b-instruct-q4_K_M for most queries (1536 context, 256 tokens max)
+- **Heavy**: mixtral:8x7b models for complex reasoning via vLLM (4096 context, 512 tokens max)
 
 ### Performance Targets
 - **First token**: ≤1000ms (local), ≤1200ms (vLLM)
@@ -105,12 +175,28 @@ curl http://localhost:3000/health/summary
 
 ### Chat Interface
 ```bash
+# Main chat endpoint (streaming response)
 curl -X POST http://localhost:3000/chat \
   -H "Content-Type: application/json" \
   -d '{"prompt": "Hello JARVIS", "session_id": "test"}'
+
+# Test endpoint with TTS integration
+curl -X POST http://localhost:3000/chat/test \
+  -H "Content-Type: application/json" \
+  -d '{"text": "Hello JARVIS", "session_id": "test"}'
+
+# Direct TTS endpoint (no LLM processing)
+curl -X POST http://localhost:3000/chat/speak \
+  -H "Content-Type: application/json" \
+  -d '{"text": "Hello there!"}'
+
+# Clear session
+curl -X POST http://localhost:3000/chat/clear \
+  -H "Content-Type: application/json" \
+  -d '{"session_id": "test"}'
 ```
 
-## Common Errors
+## Common Issues & Troubleshooting
 
 ### Missing GGUF Files
 ```
@@ -119,13 +205,36 @@ Expected path: /path/to/models/llama-3.1-8b-instruct-q4_k_m.gguf
 ```
 **Solution**: Download required models to the `models/` directory
 
+### Environment Variables Not Loaded
+```
+❌ ELEVEN_API_KEY not set
+❌ PORCUPINE_ACCESS_KEY not set
+```
+**Solution**: Create `.env` file with your API keys or use the startup scripts
+
+### Backend Not Running
+```
+❌ Backend not running. Please start it first with: ./start_backend.sh
+```
+**Solution**: Start the TypeScript backend before the voice system
+
 ### Metal Not Working
 ```
 ⚠️ Metal layers not used - performance may be degraded
 ```
-**Solution**: Ensure you're on macOS with M1/M2 and n_gpu_layers = -1
+**Solution**: Ensure you're on macOS with Apple Silicon and n_gpu_layers = -1
 
-### Wrong Base URL
+### Python Dependencies Missing
+```
+ModuleNotFoundError: No module named 'pvporcupine'
+```
+**Solution**: Activate virtual environment and install requirements:
+```bash
+source jarvis_env/bin/activate
+pip install -r requirements.txt
+```
+
+### Wrong vLLM Base URL
 ```
 ❌ vLLM unreachable at http://localhost:8000
 ```
@@ -135,17 +244,27 @@ Expected path: /path/to/models/llama-3.1-8b-instruct-q4_k_m.gguf
 
 ### File Structure
 ```
-/src/
-  index.ts                      # Main entry point
-  /engines/local/               # llama.cpp integration
-  /engines/heavy/               # vLLM client
-  /session/                     # Context management
-  /router/                      # Query routing
-  /tools/                       # Device actions, web fetch
-  /utils/                       # Logging, timing utilities
-
-/tests/                         # Unit tests and benchmarks
-/config/                        # Model policy configuration
+jarvis_ai/
+├── src/                        # TypeScript backend source
+│   ├── index.ts               # Main entry point & HTTP server
+│   ├── engines/               # AI model integrations
+│   │   ├── local/            # llama.cpp bindings
+│   │   └── heavy/            # vLLM client
+│   ├── conversation/         # TTS integration & conversation handling
+│   ├── session/              # Context management & KV-cache
+│   ├── router/               # Query classification & routing
+│   ├── tools/                # Device actions, web fetch, extensible tools
+│   ├── policy/               # Configuration loading & validation
+│   ├── asr/                  # Speech recognition components
+│   └── utils/                # Logging, timing, environment utilities
+├── config/                    # Model policy & configuration
+├── tests/                     # Unit tests & benchmarks
+├── models/                    # GGUF model storage
+├── jarvis_env/               # Python virtual environment
+├── wake_system_integrated.py # Python voice system (wake word + ASR + TTS)
+├── start_backend.sh          # Backend startup script
+├── start_jarvis.sh           # Complete system startup script
+└── requirements.txt          # Python dependencies
 ```
 
 ### Testing
@@ -160,30 +279,65 @@ npm run bench
 npm run build
 ```
 
-### Pre-commit Protection
-The repository enforces strict file organization. Only these files may be created/edited for core functionality:
-- `/src/engines/local/LocalLlamaEngine.ts`
-- `/src/engines/heavy/VllmEngine.ts`
-- `/src/session/SessionManager.ts`
-- `/src/router/Router.ts`
-- `/src/router/EngineSelector.ts`
-- `/src/policy/loadPolicy.ts`
-- `/src/utils/logging.ts`
-- `/src/index.ts`
+### Development Commands
+```bash
+# Development mode (auto-reload)
+npm run dev
 
-## Voice System Integration
+# Build TypeScript
+npm run build
 
-The current TypeScript engine integrates with the existing Python voice system:
-- **Wake Word**: `wake_system.py` handles Porcupine wake word detection
-- **TTS**: ElevenLabs integration for JARVIS voice output
-- **API Bridge**: HTTP endpoints connect voice system to TypeScript engine
+# Run tests
+npm test
 
-## Roadmap
+# Run latency benchmarks
+npm run bench
 
-1. **✅ Phase 1**: High-performance TypeScript engine
-2. **🔄 Phase 2**: Voice system integration (Python → TypeScript)
-3. **📋 Phase 3**: Advanced device automation
-4. **🌐 Phase 4**: Cross-platform deployment
+# Check system health
+npm run health
+```
+
+## System Integration
+
+### Voice Pipeline
+The system uses a sophisticated voice pipeline connecting Python and TypeScript components:
+
+1. **Wake Word Detection** (Python): Porcupine detects "Jarvis" wake word
+2. **Speech Recognition** (Python): OpenAI Whisper transcribes speech to text
+3. **Text Processing** (TypeScript): Backend processes queries through AI models
+4. **Response Generation** (TypeScript): Streaming responses with conversation context
+5. **Text-to-Speech** (Python): ElevenLabs synthesizes natural voice responses
+6. **Follow-up Management** (Python): Intelligent conversation flow control
+
+### API Bridge
+HTTP endpoints connect the voice system to the TypeScript backend:
+- `/chat/test` - Full processing with TTS integration
+- `/chat/speak` - Direct TTS without LLM processing
+- `/chat/clear` - Session management
+- `/health/*` - System monitoring
+
+## Current Status & Roadmap
+
+### ✅ Completed Features
+- High-performance TypeScript backend with llama.cpp integration
+- Complete voice pipeline (wake word + ASR + TTS)
+- Intelligent conversation flow with follow-up detection
+- Session management and context retention
+- Device automation capabilities
+- HTTP API endpoints for integration
+- Tiered model system with fallback logic
+- Comprehensive error handling and logging
+
+### 🔄 Current Phase: Production Optimization
+- Performance tuning and latency optimization
+- Enhanced device automation capabilities
+- Advanced conversation management
+
+### 📋 Future Phases
+- **Phase 3**: Advanced device automation and smart home integration
+- **Phase 4**: Cross-platform deployment (Windows, Linux)
+- **Phase 5**: Mobile companion app
+- **Phase 6**: Multi-user support and personalization
 
 ## License
 

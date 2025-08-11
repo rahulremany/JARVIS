@@ -34,13 +34,14 @@ def load_env_variables():
                         os.environ[key.strip()] = value
             return True
     
-    # Fallback: Set hardcoded values if no env file found
+    # Check if required environment variables are set
     if not os.getenv('ELEVEN_API_KEY') or not os.getenv('PORCUPINE_ACCESS_KEY'):
-        print("⚠️  No .env file found, setting hardcoded environment variables")
-        os.environ['ELEVEN_API_KEY'] = 'sk_8cfb858b5cb92cbae9dbd1bd03059eae8de3ee5ea2d87ae5'
-        os.environ['PORCUPINE_ACCESS_KEY'] = 'X/oCDj0hcbuwCCLjZUmu1p7fdBjBN4Vti6rcBvSp9ycmJguOG9kEZQ=='
-        os.environ['JARVIS_VOICE_ID'] = 'LE42bqYwZicKpZRastCO'
-        return True
+        print("❌ Error: Required API keys not found!")
+        print("Please create a .env file with:")
+        print("ELEVEN_API_KEY=your_elevenlabs_api_key_here")
+        print("PORCUPINE_ACCESS_KEY=your_porcupine_access_key_here")
+        print("JARVIS_VOICE_ID=your_voice_id_here")
+        return False
     
     return False
 

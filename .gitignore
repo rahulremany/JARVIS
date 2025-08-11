@@ -30,9 +30,13 @@ ENV/
 
 # API Keys & Sensitive Data
 .env
+.env.local
+.env.production
 *.key
 api_keys.txt
 secrets.json
+set_env.sh
+config.env
 
 # Audio Files (temporary)
 *.mp3
