@@ -17,8 +17,8 @@ export interface ModelMetadata {
 
 export const MODEL_CATALOG: ModelMetadata[] = [
   {
-    id: "llama3.2:3b-instruct-q4_K_M",
-    path: "models/llama-3.2-3b-instruct-q4_k_m.gguf",
+    id: "qwen2.5:3b-instruct-q4_K_M",
+    path: "models/qwen2.5-3b-instruct-q4_k_m.gguf",
     sizeGB: 2.0,
     minRAMGB: 4,
     recommendedRAMGB: 6,

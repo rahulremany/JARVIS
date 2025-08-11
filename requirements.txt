@@ -1,0 +1,9 @@
+numpy
+pvporcupine
+speechrecognition
+pyaudio
+requests
+sounddevice
+scipy
+matplotlib
+openai-whisper

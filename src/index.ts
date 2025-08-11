@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+// Load environment variables from .env file FIRST
+import 'dotenv/config';
+
 import { LocalLlamaEngine } from './engines/local/LocalLlamaEngine.js';
 import { VllmEngine } from './engines/heavy/VllmEngine.js';
 import { SessionManager } from './session/SessionManager.js';

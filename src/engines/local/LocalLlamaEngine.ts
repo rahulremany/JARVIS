@@ -48,13 +48,13 @@ class HardwareOptimizer {
     // Detect best model based on RAM
     if (this.totalRAM <= 8) {
       // 8GB or less: Use 3B model
-      this.modelPath = "llama3.2:3b-instruct-q4_K_M";
+      this.modelPath = "qwen2.5:3b-instruct-q4_K_M";
       this.gpuLayers = this.isAppleSilicon ? 32 : 0; // All layers for 3B
       this.contextSize = 512;
       this.batchSize = 128;
     } else if (this.totalRAM <= 16) {
       // 16GB: Can handle 3B with bigger context or 8B with small context
-      this.modelPath = "llama3.2:3b-instruct-q4_K_M"; 
+      this.modelPath = "qwen2.5:3b-instruct-q4_K_M"; 
       this.gpuLayers = this.isAppleSilicon ? 32 : 16;
       this.contextSize = 2048;
       this.batchSize = 256;

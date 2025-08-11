@@ -15,6 +15,8 @@
     "health": "curl http://localhost:3000/health/summary"
   },
   "dependencies": {
+    "@nut-tree-fork/nut-js": "^4.2.6",
+    "dotenv": "^17.2.1",
     "fastify": "^4.25.2",
     "node-llama-cpp": "^3.11.0",
     "undici": "^6.6.2",

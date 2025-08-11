@@ -24,4 +24,4 @@ fi
 
 # Start the Python wake system (environment variables will be loaded automatically)
 echo "🎤 Starting JARVIS wake word system..."
-python wake_system_integrated.py
+python3 wake_system_integrated.py
