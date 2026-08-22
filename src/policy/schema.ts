@@ -12,6 +12,15 @@ export const ModelDef = z.object({
   candidates_cpu: z.array(z.string()).optional()
 }).merge(GenParams);
 
+export const FacetDef = z.object({
+  model: z.string(),
+  engine: z.enum(['ollama', 'llama_cpp', 'vllm']),
+  always_loaded: z.boolean().default(false),
+  max_tokens: z.number(),
+  ctx: z.number(),
+  temperature: z.number()
+});
+
 export const Policy = z.object({
   routing: z.object({
     escalate_tags: z.array(z.string()),
@@ -23,6 +32,13 @@ export const Policy = z.object({
     primary: ModelDef,
     heavy: ModelDef
   }),
+  // Task-routed mesh: which specialist model handles which kind of work,
+  // independent of the trivial/normal/hard difficulty axis above.
+  facets: z.object({
+    planner: FacetDef,
+    coder: FacetDef,
+    fast: FacetDef
+  }).optional(),
   autotune: z.object({
     first_token_threshold_ms: z.number(),
     total_threshold_ms: z.number(),

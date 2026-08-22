@@ -39,6 +39,35 @@ models:
     temperature: 0.3
     timeout_ms: 30000
 
+# Task-routed local mesh — one specialist model per facet, served through
+# Ollama so each is loaded/evicted on demand instead of held resident together.
+# Sized for a 16GB unified-memory machine: only `fast` stays warm at all times;
+# `planner` and `coder` swap in on demand (never both loaded at once).
+facets:
+  planner:
+    model: "qwen3.5:9b-instruct-q4_K_M"
+    engine: "ollama"
+    always_loaded: false
+    max_tokens: 1024
+    ctx: 8192
+    temperature: 0.4
+
+  coder:
+    model: "qwen2.5-coder:7b-instruct-q4_K_M"
+    engine: "ollama"
+    always_loaded: false
+    max_tokens: 1024
+    ctx: 4096
+    temperature: 0.1
+
+  fast:
+    model: "llama3.2:3b-instruct-q4_K_M"
+    engine: "ollama"
+    always_loaded: true
+    max_tokens: 128
+    ctx: 2048
+    temperature: 0.2
+
 autotune:
   first_token_threshold_ms: 1500
   total_threshold_ms: 8000

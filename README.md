@@ -1,66 +1,73 @@
-# Jarvis – Voice-First AI Assistant
+# JARVIS — Local-First AI Assistant Mesh
 
-Jarvis is a real-time, always-listening AI assistant designed for natural, conversational interaction using speech.  
-It combines speech recognition, large language models, and speech synthesis into an integrated, hands-free system.
+A voice-driven personal assistant that runs entirely on-device (Apple Silicon),
+routing each request to whichever local specialist model — or non-model
+reflex — is actually suited to it, instead of sending everything through one
+general-purpose model or a metered cloud API.
 
-## Tech Stack
+## Why local-first
 
-- **Speech-to-Text (STT):** OpenAI Whisper / Wispr
-- **Language Model (LLM Core):** OpenAI, Anthropic, or Local (Qwen, LLaMA)
-- **Text-to-Speech (TTS):** ElevenLabs / Coqui
-- **Backend:** Python, FastAPI
-- **Audio I/O:** Microphone input & speaker output
-- **Deployment:** Local execution with modular architecture for cloud expansion
+Built for a single 16GB-unified-memory machine with no ongoing API budget.
+Every design choice below follows from that: small quantized models instead
+of one large one, non-LLM reflexes wherever a classical algorithm is faster
+and cheaper than a model call, and load/evict scheduling instead of holding
+everything in memory at once.
 
-## Features
+## Architecture: four tiers, ordered by speed
 
-- **Wake Word Detection:** Hands-free activation by saying “Jarvis”
-- **Real-Time STT:** Converts speech to text with high accuracy
-- **Natural Language Understanding:** Processes requests through a pluggable LLM core
-- **Dynamic Skills & Tools:**
-  - Information lookup
-  - Scheduling and reminders
-  - Custom command execution
-- **TTS Output:** Responds in natural-sounding synthesized speech
-- **Sleep Mode:** Ability to pause listening until reactivated
+| Tier | What it does | How |
+|---|---|---|
+| **1. Reflex** | "Is anything happening" | Pixel-diffing (`MotionDetector`) gates a pluggable object detector (`ObjectDetector`) — no model call at all |
+| **2. Fast commands** | "Open Chrome", "set a timer" | Local intent-matching (`Router.classify` + `DeviceActions`) executes directly, no LLM in the loop |
+| **3. Agentic chaining** | Multi-step tasks needing judgment | A facet-routed local model reasons over tools exposed via **MCP** (`src/mcp/server.ts`) |
+| **4. Vision-grounded fallback** | Actions with no clean API (GUI automation) | Screenshot + vision-model grounding (`ToolExecutor.clickElement`) |
 
-## Architecture
+Tier 3 is where the **model mesh** lives — see below.
 
-![Jarvis Architecture](docs/jarvis_architecture.png)
+## The model mesh
 
-**Flow:**
-1. Microphone captures user audio upon wake word detection.
-2. STT engine transcribes speech to text.
-3. LLM core processes the query, optionally invoking custom tools.
-4. Response is synthesized via TTS.
-5. Audio is played through speakers.
+Rather than one model handling every request, requests are classified by
+*task type* (not just difficulty) and routed to a specialist:
 
-## Example Session
+| Facet | Task | Model | Resident |
+|---|---|---|---|
+| `planner` | Brainstorming, outlines, project breakdown | Qwen 3.5 9B Instruct (4-bit) | On demand |
+| `coder` | Code generation, debugging, refactors | Qwen2.5-Coder 7B Instruct (4-bit) | On demand |
+| `fast` | Autocomplete, commit messages, quick utility | Llama 3.2 3B (4-bit) | Always loaded |
 
-![Jarvis Terminal Session](docs/jarvis_terminal.png)
+All three are served through **Ollama**, which handles per-model load/evict
+so the three specialists share a 16GB RAM budget without a hand-rolled
+scheduler — `fast` stays warm, `planner`/`coder` swap in on demand and are
+never resident simultaneously. See `src/router/Router.ts::classifyFacet` for
+the (deliberately non-LLM) routing logic and `src/engines/mesh/OllamaEngine.ts`
+for the serving client. Config lives in `config/model-policy.yaml` under
+`facets`.
 
-**Conversation Flow:**
-1. User: “Jarvis, introduce yourself.”  
-   **Jarvis:** “I’m here to assist with your queries and tasks. How can I help you today?”
-2. User: “Summarize what you can do.”  
-   **Jarvis:** “I can help with scheduling, notifications, research, information lookup, and more.”
-3. User: “That’s all.”  
-   **Jarvis:** *Enters sleep mode.*
+## Conversation loop
 
-## Project Goals
+- **Wake word**: local, always-on (`src/asr/KwsPorcupine.ts`)
+- **STT**: local Whisper (`src/asr/AsrWhisper.ts`)
+- **Reasoning**: routed through the tier-appropriate engine/facet
+- **TTS**: streamed response (`src/conversation/ConversationHandler.ts`)
 
-- Explore **multimodal AI system design**.
-- Demonstrate integration of **real-time audio pipelines**.
-- Show **modular AI architecture** that supports switching between cloud and local LLMs.
-- Build a **resume-ready portfolio project** highlighting:
-  - Speech recognition
-  - LLM integration
-  - Speech synthesis
-  - Event-driven application design
+## Build status
 
-## Future Enhancements
+This is an active local-first rebuild, not a finished product. What's real
+today vs. scaffolded for what comes next:
 
-- Context retention across sessions
-- Multi-language support
-- Visual interface for hybrid voice+screen workflows
-- Integration with IoT devices and automation APIs
+- **Working**: wake word detection, local Whisper STT, direct-command
+  parsing and macOS automation, the difficulty-based router/engine
+  selection (`trivial`/`normal`/`hard` → local/heavy), TTS output.
+- **Scaffolded, wired, pending real hardware/weights**: the facet mesh
+  (`OllamaEngine` + `classifyFacet`) is implemented against Ollama's API but
+  needs the three models pulled locally to run; the reflex vision tier
+  (`MotionDetector` is fully functional against raw frame buffers,
+  `ObjectDetector` ships a stub backend pending a real YOLO/ONNX model); the
+  MCP tool server (`src/mcp/server.ts`) implements the real protocol against
+  the existing tool set, pending a live client session.
+
+## Tech stack
+
+Node.js / TypeScript, `node-llama-cpp` (direct GGUF inference), Ollama
+(mesh serving), Model Context Protocol SDK, Fastify, Porcupine (wake word),
+Whisper (STT), Zod-validated YAML policy config.

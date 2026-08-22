@@ -3,6 +3,11 @@ import { DeviceActions } from '../tools/DeviceActions.js';
 
 export type RouteClass = 'direct_command' | 'trivial' | 'normal' | 'hard';
 
+// Which specialist model in the local mesh should handle this request.
+// Orthogonal to RouteClass: a request can be "hard" difficulty and still be
+// a "coder" facet, or "trivial" and still be a "planner" facet.
+export type Facet = 'planner' | 'coder' | 'fast';
+
 export interface RouteResult {
   class: RouteClass;
   confidence: number;
@@ -145,6 +150,39 @@ export class Router {
       confidence: 0.6,
       reasoning: 'Default classification for conversational input'
     };
+  }
+
+  // Keywords that indicate a coding/debugging task -> the coder facet
+  private coderKeywords = [
+    'code', 'function', 'class', 'algorithm', 'implement', 'debug',
+    'refactor', 'unit test', 'stack trace', 'syntax error', 'compile',
+    'regex', 'script', 'boilerplate', 'git commit', 'api endpoint'
+  ];
+
+  // Keywords that indicate planning/brainstorming -> the planner facet
+  private plannerKeywords = [
+    'plan', 'outline', 'brainstorm', 'kanban', 'roadmap', 'folder structure',
+    'break down', 'steps to', 'architecture', 'design doc', 'project goal',
+    'compare', 'pros and cons', 'strategy'
+  ];
+
+  // Classify which mesh specialist should serve this request. Cheap keyword
+  // pass by design -- routing itself must never cost a model invocation.
+  classifyFacet(input: string): Facet {
+    const lower = input.toLowerCase();
+
+    if (this.coderKeywords.some(k => lower.includes(k))) {
+      return 'coder';
+    }
+    if (this.plannerKeywords.some(k => lower.includes(k))) {
+      return 'planner';
+    }
+    // Short, throwaway requests (autocomplete, summarize-this, quick lookup)
+    // default to the always-loaded fast-utility model.
+    if (input.length < 120) {
+      return 'fast';
+    }
+    return 'planner';
   }
 
   // Get engine tier based on route class

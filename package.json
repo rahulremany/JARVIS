@@ -10,11 +10,13 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsx src/index.ts",
+    "mcp": "tsx src/mcp/server.ts",
     "bench": "tsx tests/latency.bench.ts",
     "test": "jest",
     "health": "curl http://localhost:3000/health/summary"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
     "@nut-tree-fork/nut-js": "^4.2.6",
     "dotenv": "^17.2.1",
     "fastify": "^4.25.2",

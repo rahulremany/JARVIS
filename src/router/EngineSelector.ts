@@ -1,7 +1,8 @@
 import { logger } from '../utils/logging.js';
-import { Router, type RouteClass } from './Router.js';
+import { Router, type RouteClass, type Facet } from './Router.js';
 import { LocalLlamaEngine } from '../engines/local/LocalLlamaEngine.js';
 import { VllmEngine } from '../engines/heavy/VllmEngine.js';
+import { OllamaEngine } from '../engines/mesh/OllamaEngine.js';
 import { DeviceActions } from '../tools/DeviceActions.js';
 import { loadPolicy } from '../policy/loadPolicy.js';
 import type { PolicyConfig } from '../policy/schema.js';
@@ -23,6 +24,7 @@ export interface GenerationEvent {
 export class EngineSelector {
   private localEngine: LocalLlamaEngine;
   private heavyEngine: VllmEngine | null = null;
+  private meshEngine: OllamaEngine | null = null;
   private router = new Router();
   private deviceActions = new DeviceActions();
   private policy: PolicyConfig;
@@ -31,9 +33,49 @@ export class EngineSelector {
     this.policy = policy || loadPolicy();
     this.localEngine = localEngine || new LocalLlamaEngine();
     this.heavyEngine = heavyEngine || null;
-    
+
     if (!this.heavyEngine && this.policy.endpoints.vllm_base_url) {
       this.heavyEngine = new VllmEngine(this.policy.endpoints.vllm_base_url);
+    }
+
+    // Mesh engine only comes up if the policy actually declares facets --
+    // keeps this a no-op for anyone still running the plain trivial/normal/hard
+    // policy shape.
+    if (this.policy.facets) {
+      this.meshEngine = new OllamaEngine(undefined, {
+        planner: this.policy.facets.planner.model,
+        coder: this.policy.facets.coder.model,
+        fast: this.policy.facets.fast.model
+      });
+    }
+  }
+
+  // Task-routed mesh entry point: classify by facet (what kind of work this
+  // is), not by difficulty, and dispatch straight to the specialist model.
+  async *generateFacetStream(
+    prompt: string,
+    params: GenerationParams = {}
+  ): AsyncGenerator<GenerationEvent & { facet?: Facet }> {
+    if (!this.meshEngine || !this.policy.facets) {
+      throw new Error('Model mesh not configured -- add a `facets` block to model-policy.yaml');
+    }
+
+    const facet = this.router.classifyFacet(prompt);
+    const facetConfig = this.policy.facets[facet];
+
+    if (this.policy.policy.log_routing_decisions) {
+      logger.info('Facet route decision:', { input: prompt.substring(0, 100), facet, model: facetConfig.model });
+    }
+
+    const finalParams: GenerationParams = {
+      max_tokens: params.max_tokens ?? facetConfig.max_tokens,
+      ctx: params.ctx ?? facetConfig.ctx,
+      temperature: params.temperature ?? facetConfig.temperature,
+      stop: params.stop
+    };
+
+    for await (const event of this.meshEngine.generateStream(facet, prompt, finalParams)) {
+      yield { ...event, facet };
     }
   }
 
@@ -43,7 +85,7 @@ export class EngineSelector {
     params: GenerationParams = {}
   ): AsyncGenerator<GenerationEvent> {
     const routeResult = this.router.classify(prompt);
-    
+
     if (this.policy.policy.log_routing_decisions) {
       logger.info('Route decision:', {
         input: prompt.substring(0, 100),
