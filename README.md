@@ -19,8 +19,8 @@ everything in memory at once.
 |---|---|---|
 | **1. Reflex** | "Is anything happening" | Pixel-diffing (`MotionDetector`) gates a pluggable object detector (`ObjectDetector`) — no model call at all |
 | **2. Fast commands** | "Open Chrome", "set a timer" | Local intent-matching (`Router.classify` + `DeviceActions`) executes directly, no LLM in the loop |
-| **3. Agentic chaining** | Multi-step tasks needing judgment | A facet-routed local model reasons over tools exposed via **MCP** (`src/mcp/server.ts`) |
-| **4. Vision-grounded fallback** | Actions with no clean API (GUI automation) | Screenshot + vision-model grounding (`ToolExecutor.clickElement`) |
+| **3. Agentic chaining** | Multi-step tasks needing judgment | A facet-routed local model reasons over tools exposed via **MCP** (`jarvis/mcp/server.py`) |
+| **4. Vision-grounded fallback** | Actions with no clean API (GUI automation) | Screenshot + vision-model grounding (`ToolExecutor.click_element`) |
 
 Tier 3 is where the **model mesh** lives — see below.
 
@@ -38,36 +38,53 @@ Rather than one model handling every request, requests are classified by
 All three are served through **Ollama**, which handles per-model load/evict
 so the three specialists share a 16GB RAM budget without a hand-rolled
 scheduler — `fast` stays warm, `planner`/`coder` swap in on demand and are
-never resident simultaneously. See `src/router/Router.ts::classifyFacet` for
-the (deliberately non-LLM) routing logic and `src/engines/mesh/OllamaEngine.ts`
-for the serving client. Config lives in `config/model-policy.yaml` under
-`facets`.
+never resident simultaneously. See `jarvis/router/router.py::classify_facet`
+for the (deliberately non-LLM) routing logic and
+`jarvis/engines/mesh/ollama_engine.py` for the serving client. Config lives
+in `config/model-policy.yaml` under `facets`.
 
 ## Conversation loop
 
-- **Wake word**: local, always-on (`src/asr/KwsPorcupine.ts`)
-- **STT**: local Whisper (`src/asr/AsrWhisper.ts`)
+- **Wake word**: local, always-on (`jarvis/asr/kws_porcupine.py`)
+- **STT**: local Whisper (`jarvis/asr/asr_whisper.py`)
 - **Reasoning**: routed through the tier-appropriate engine/facet
-- **TTS**: streamed response (`src/conversation/ConversationHandler.ts`)
+- **TTS**: streamed response (`jarvis/conversation/conversation_handler.py`)
+
+`wake_system_integrated.py` is the standalone voice loop -- wake word →
+record → Whisper → backend call → speak, including the "yes sir" filler and
+the follow-up listening window -- talking to the backend over plain HTTP on
+`localhost:3000`.
+
+## Running it
+
+```
+python3 -m jarvis.main          # or ./start_backend.sh -- FastAPI backend
+python3 -m jarvis.mcp.server    # MCP tool server (stdio transport)
+python3 wake_system_integrated.py  # standalone voice loop
+pytest tests_py/                # test suite
+```
 
 ## Build status
 
-This is an active local-first rebuild, not a finished product. What's real
+This is an active local-first build, not a finished product. What's real
 today vs. scaffolded for what comes next:
 
-- **Working**: wake word detection, local Whisper STT, direct-command
-  parsing and macOS automation, the difficulty-based router/engine
-  selection (`trivial`/`normal`/`hard` → local/heavy), TTS output.
+- **Working**: wake word detection (`jarvis/asr/kws_porcupine.py`, real
+  `pvporcupine` binding), Whisper STT (`jarvis/asr/asr_whisper.py`, real
+  `openai-whisper` binding), direct-command parsing and macOS automation,
+  the difficulty-based router/engine selection (`trivial`/`normal`/`hard` →
+  local/heavy), TTS output, the standalone `wake_system_integrated.py` voice
+  loop.
 - **Scaffolded, wired, pending real hardware/weights**: the facet mesh
-  (`OllamaEngine` + `classifyFacet`) is implemented against Ollama's API but
-  needs the three models pulled locally to run; the reflex vision tier
+  (`OllamaEngine` + `classify_facet`) is implemented against Ollama's API
+  but needs the three models pulled locally to run; the reflex vision tier
   (`MotionDetector` is fully functional against raw frame buffers,
   `ObjectDetector` ships a stub backend pending a real YOLO/ONNX model); the
-  MCP tool server (`src/mcp/server.ts`) implements the real protocol against
-  the existing tool set, pending a live client session.
+  MCP tool server (`jarvis/mcp/server.py`) implements the real protocol
+  against the existing tool set, pending a live client session.
 
 ## Tech stack
 
-Node.js / TypeScript, `node-llama-cpp` (direct GGUF inference), Ollama
-(mesh serving), Model Context Protocol SDK, Fastify, Porcupine (wake word),
-Whisper (STT), Zod-validated YAML policy config.
+Python, FastAPI, `llama-cpp-python` (direct GGUF inference), Ollama (mesh
+serving), Model Context Protocol SDK, Pydantic-validated YAML policy config,
+Porcupine (wake word), Whisper (STT), NumPy (reflex-tier vision).

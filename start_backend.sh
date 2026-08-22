@@ -1,9 +1,8 @@
 #!/bin/bash
-# JARVIS Backend Startup Script with Environment Loading
+# JARVIS Backend Startup Script
 
-echo "🚀 Starting JARVIS Backend..."
+echo "🚀 Starting JARVIS Backend (Python)..."
 
-# Load environment variables from .env file if it exists
 if [ -f .env ]; then
     echo "✅ Loading environment variables from .env"
     export $(grep -v '^#' .env | xargs)
@@ -11,7 +10,6 @@ else
     echo "⚠️  No .env file found"
 fi
 
-# Verify key environment variables are set
 if [ -z "$ELEVEN_API_KEY" ]; then
     echo "❌ ELEVEN_API_KEY not set"
 else
@@ -24,6 +22,5 @@ else
     echo "✅ PORCUPINE_ACCESS_KEY loaded: ${PORCUPINE_ACCESS_KEY:0:10}..."
 fi
 
-# Start the backend
-echo "🌐 Starting Node.js backend..."
-npm run dev
+echo "🌐 Starting Python (FastAPI) backend..."
+python3 -m jarvis.main
