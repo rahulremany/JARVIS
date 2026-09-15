@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass, field
-from typing import Any, Literal, Optional
+from typing import Literal
 
 from ..utils.logging import logger
 
@@ -89,24 +89,3 @@ class SessionManager:
 
     def get_session_count(self) -> int:
         return len(self._sessions)
-
-
-# Global context/chat storage for llama.cpp sessions (KV-cache reuse),
-# mirroring the module-level `llamaSessions` map in SessionManager.ts.
-_llama_sessions: dict[str, Any] = {}
-
-
-def get_llama_session(session_id: str, create: Any) -> Any:
-    if session_id in _llama_sessions:
-        return _llama_sessions[session_id]
-
-    logger.debug(f"Creating new llama session: {session_id}")
-    session = create()
-    _llama_sessions[session_id] = session
-
-    if len(_llama_sessions) > 50:
-        oldest_key = next(iter(_llama_sessions))
-        del _llama_sessions[oldest_key]
-        logger.debug(f"Cleaned up old llama session: {oldest_key}")
-
-    return session

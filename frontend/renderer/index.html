@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' http://127.0.0.1:* http://localhost:* https://api.openweathermap.org data: blob:;" />
+<title>J.A.R.V.I.S.</title>
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="jarvis-fx.css" />
+</head>
+<body>
+  <canvas id="jarvis-particles"></canvas>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-title">J.A.R.V.I.S</span>
+      <span class="status-pill" id="backend-status"><span class="dot"></span>Connecting…</span>
+    </div>
+    <div class="clock-block">
+      <span class="icon">🕐</span>
+      <span id="clock-time">--:--:-- --</span>
+      <span class="sep">|</span>
+      <span id="clock-date">-- --, ----</span>
+    </div>
+    <div class="header-right">
+      <div class="weather-chip" id="header-weather">
+        <span class="icon">📍</span>
+        <span id="header-weather-text">Weather unavailable</span>
+      </div>
+      <button class="icon-btn" id="settings-btn" title="Settings">⚙</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <!-- Left column -->
+    <aside class="sidebar">
+      <section class="card">
+        <div class="card-header">
+          <h2>⚙ System Stats</h2>
+          <button class="icon-btn small" id="refresh-stats" title="Refresh">⟳</button>
+        </div>
+        <div class="stat-row">
+          <span>CPU Usage</span><span id="cpu-percent">--%</span>
+        </div>
+        <div class="bar"><div class="bar-fill" id="cpu-bar"></div></div>
+        <div class="stat-row">
+          <span>RAM Usage</span><span id="ram-label">-- GB</span>
+        </div>
+        <div class="bar"><div class="bar-fill" id="ram-bar"></div></div>
+        <div class="stat-grid">
+          <div class="stat-tile"><span class="label">CPU</span><span class="value" id="cpu-tile">--%</span></div>
+          <div class="stat-tile"><span class="label">Memory</span><span class="value" id="mem-tile">--%</span></div>
+          <div class="stat-tile"><span class="label">Disk</span><span class="value" id="disk-tile">-- / -- GB</span></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2>☁ Weather</h2>
+          <button class="icon-btn small" id="refresh-weather" title="Refresh">⟳</button>
+        </div>
+        <div id="weather-body">
+          <div class="weather-empty">Set <code>WEATHER_API_KEY</code> in .env to enable</div>
+        </div>
+      </section>
+
+      <section class="card card-clickable fx-interactive holo-in" id="fitness-widget" title="Open Fitness dashboard">
+        <div class="card-header">
+          <h2>💓 Fitness</h2>
+          <button class="icon-btn small" id="refresh-fitness" title="Refresh">⟳</button>
+        </div>
+        <div id="fitness-body">
+          <div class="weather-empty">Fitness tracker offline -- run <code>fitness.sh</code></div>
+        </div>
+        <p class="hint">Tap to open full dashboard</p>
+      </section>
+
+    </aside>
+
+    <!-- Center column -->
+    <section class="center">
+      <div class="orb-wrap">
+        <div class="orb" id="orb">
+          <div class="orb-core"></div>
+          <div class="orb-ring ring-1"></div>
+          <div class="orb-ring ring-2"></div>
+        </div>
+      </div>
+      <h1 class="orb-title">J.A.R.V.I.S</h1>
+      <div class="status-pill big" id="voice-status"><span class="dot"></span>Idle</div>
+
+      <div class="action-bar">
+        <button class="round-btn" id="camera-action" title="Toggle camera">📷</button>
+        <button class="round-btn primary" id="mic-action" title="Push to talk">🎙</button>
+        <button class="round-btn" id="transcribe-action" title="Transcribe mode (lecture/meeting notes)">📝</button>
+      </div>
+      <p class="hint" id="transcribe-hint" hidden></p>
+    </section>
+
+    <!-- Right column -->
+    <aside class="sidebar sidebar-right">
+      <section class="card card-clickable fx-interactive holo-in" id="projects-widget" title="Open R&D Projects">
+        <div class="card-header">
+          <h2>🧪 R&amp;D Projects</h2>
+          <button class="icon-btn small" id="refresh-projects" title="Refresh">⟳</button>
+        </div>
+        <div id="projects-widget-body">
+          <div class="weather-empty">No projects yet</div>
+        </div>
+        <p class="hint">Tap to open workspace</p>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2>📷 Camera</h2>
+          <div class="card-header-actions">
+            <button class="icon-btn small" id="camera-snapshot" title="Snapshot">📷</button>
+            <button class="icon-btn small" id="camera-toggle" title="Toggle camera">⏻</button>
+          </div>
+        </div>
+        <div class="camera-frame">
+          <video id="camera-video" autoplay muted playsinline hidden></video>
+          <div class="camera-off" id="camera-off-label">
+            <span class="camera-off-icon">🎥</span>
+            <span>Camera Off</span>
+          </div>
+        </div>
+        <p class="hint" id="camera-hint">Camera is inactive. Click the power button to start.</p>
+      </section>
+
+      <section class="card">
+        <div class="card-header">
+          <h2>ⓘ System Uptime</h2>
+          <span id="uptime-value">00:00:00</span>
+        </div>
+        <div class="stat-row"><span>System Running For:</span><span id="uptime-value-2">00:00:00</span></div>
+        <div class="stat-grid two">
+          <div class="stat-tile"><span class="label">Session</span><span class="value" id="session-tile">1</span></div>
+          <div class="stat-tile"><span class="label">Commands</span><span class="value" id="commands-tile">0</span></div>
+        </div>
+        <div class="stat-row small-top"><span>System Load</span><span id="load-percent">--%</span></div>
+        <div class="bar"><div class="bar-fill" id="load-bar"></div></div>
+        <span class="load-label" id="load-label">--</span>
+      </section>
+    </aside>
+  </main>
+
+  <div class="fitness-overlay holo-in" id="fitness-overlay" hidden>
+    <div class="fitness-overlay-bar">
+      <span class="fitness-overlay-title">💓 Fitness Dashboard</span>
+      <button class="icon-btn" id="fitness-overlay-close" title="Close (Esc)">✕</button>
+    </div>
+    <webview id="fitness-webview" class="fitness-webview"></webview>
+  </div>
+
+  <div class="fitness-overlay holo-in" id="projects-overlay" hidden>
+    <div class="fitness-overlay-bar">
+      <span class="fitness-overlay-title">🧪 R&amp;D Project Workspace</span>
+      <button class="icon-btn" id="projects-overlay-close" title="Close (Esc)">✕</button>
+    </div>
+    <div class="project-workspace">
+      <aside class="project-list-pane">
+        <button class="pill-btn fx-interactive" id="project-new-btn">+ New Project</button>
+        <div class="project-list" id="project-list"></div>
+      </aside>
+      <section class="project-detail-pane" id="project-detail-pane">
+        <div class="project-empty-state">Select a project, or create a new one.</div>
+      </section>
+    </div>
+  </div>
+
+  <div class="fitness-overlay holo-in" id="notes-overlay" hidden>
+    <div class="fitness-overlay-bar">
+      <span class="fitness-overlay-title">📝 Lecture Notes</span>
+      <div class="card-header-actions">
+        <button class="pill-btn" id="notes-save-btn">⬇ Save</button>
+        <button class="icon-btn" id="notes-overlay-close" title="Close (Esc)">✕</button>
+      </div>
+    </div>
+    <div class="notes-body" id="notes-body"></div>
+  </div>
+
+  <script src="particles.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "jarvis-dashboard",
+  "version": "1.0.0",
+  "description": "JARVIS orchestration dashboard -- Electron frontend for the Claude-powered JARVIS backend",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "electron": "^32.0.0"
+  }
+}

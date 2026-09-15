@@ -16,11 +16,9 @@ else
     echo "✅ ELEVEN_API_KEY loaded: ${ELEVEN_API_KEY:0:10}..."
 fi
 
-if [ -z "$PORCUPINE_ACCESS_KEY" ]; then
-    echo "❌ PORCUPINE_ACCESS_KEY not set"
-else
-    echo "✅ PORCUPINE_ACCESS_KEY loaded: ${PORCUPINE_ACCESS_KEY:0:10}..."
-fi
-
 echo "🌐 Starting Python (FastAPI) backend..."
-python3 -m jarvis.main
+if [ -d ".venv" ]; then
+    .venv/bin/python3 -m jarvis.main
+else
+    python3 -m jarvis.main
+fi

@@ -1,5 +1,7 @@
+anthropic
+httpx
 numpy
-pvporcupine
+openwakeword
 speechrecognition
 pyaudio
 requests
@@ -7,3 +9,6 @@ sounddevice
 scipy
 matplotlib
 openai-whisper
+PyYAML
+pydantic
+mcp

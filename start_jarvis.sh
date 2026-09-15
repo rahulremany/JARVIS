@@ -5,11 +5,11 @@ echo "🤖 Starting JARVIS Complete System..."
 echo "====================================="
 
 # Activate Python virtual environment
-if [ -d "jarvis_env" ]; then
+if [ -d ".venv" ]; then
     echo "🐍 Activating Python virtual environment..."
-    source jarvis_env/bin/activate
+    source .venv/bin/activate
 else
-    echo "❌ Python virtual environment not found. Please run: python3 -m venv jarvis_env"
+    echo "❌ Python virtual environment not found. Please run: python3.12 -m venv .venv && .venv/bin/pip install -e '.[dev]'"
     exit 1
 fi
 

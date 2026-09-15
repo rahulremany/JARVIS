@@ -10,11 +10,6 @@ from ..utils.logging import logger
 
 RouteClass = Literal["direct_command", "trivial", "normal", "hard"]
 
-# Which specialist model in the local mesh should handle this request.
-# Orthogonal to RouteClass: a request can be "hard" difficulty and still be
-# a "coder" facet, or "trivial" and still be a "planner" facet.
-Facet = Literal["planner", "coder", "fast"]
-
 
 @dataclass
 class RouteResult:
@@ -38,20 +33,6 @@ class Router:
             "turn on", "turn off", "play music", "stop music", "lock doors",
             "unlock doors", "set temperature", "dim lights", "brighten lights",
             "arm security", "disarm security",
-        ]
-
-        # Keywords that indicate a coding/debugging task -> the coder facet
-        self.coder_keywords = [
-            "code", "function", "class", "algorithm", "implement", "debug",
-            "refactor", "unit test", "stack trace", "syntax error", "compile",
-            "regex", "script", "boilerplate", "git commit", "api endpoint",
-        ]
-
-        # Keywords that indicate planning/brainstorming -> the planner facet
-        self.planner_keywords = [
-            "plan", "outline", "brainstorm", "kanban", "roadmap", "folder structure",
-            "break down", "steps to", "architecture", "design doc", "project goal",
-            "compare", "pros and cons", "strategy",
         ]
 
     def classify(self, text: str) -> RouteResult:
@@ -90,22 +71,6 @@ class Router:
             return RouteResult("trivial", 0.8, "Simple calculation")
 
         return RouteResult("normal", 0.6, "Default classification for conversational input")
-
-    def classify_facet(self, text: str) -> Facet:
-        """Classify which mesh specialist should serve this request. Cheap
-        keyword pass by design -- routing itself must never cost a model
-        invocation."""
-        lower = text.lower()
-
-        if any(k in lower for k in self.coder_keywords):
-            return "coder"
-        if any(k in lower for k in self.planner_keywords):
-            return "planner"
-        # Short, throwaway requests (autocomplete, summarize-this, quick
-        # lookup) default to the always-loaded fast-utility model.
-        if len(text) < 120:
-            return "fast"
-        return "planner"
 
     def get_engine_tier(self, route_class: RouteClass) -> Literal["router", "primary", "heavy"]:
         if route_class in ("direct_command", "trivial"):

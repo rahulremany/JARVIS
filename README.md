@@ -1,90 +1,138 @@
-# JARVIS — Local-First AI Assistant Mesh
+# J.A.R.V.I.S.
 
-A voice-driven personal assistant that runs entirely on-device (Apple Silicon),
-routing each request to whichever local specialist model — or non-model
-reflex — is actually suited to it, instead of sending everything through one
-general-purpose model or a metered cloud API.
+A voice-driven personal AI assistant for macOS — wake word, real-time speech,
+and a Claude-powered agent that actually *does things* on the machine
+(opens apps, drives a browser, manages your calendar and reminders,
+transcribes lectures into study notes) instead of just describing what it
+would do. Built as a real daily-use tool, not a demo.
 
-## Why local-first
+One command (`npm start`) launches the whole stack: FastAPI backend, local
+speech pipeline, and an Electron desktop app that jumps to the front the
+instant you say "Jarvis."
 
-Built for a single 16GB-unified-memory machine with no ongoing API budget.
-Every design choice below follows from that: small quantized models instead
-of one large one, non-LLM reflexes wherever a classical algorithm is faster
-and cheaper than a model call, and load/evict scheduling instead of holding
-everything in memory at once.
+## Highlights
 
-## Architecture: four tiers, ordered by speed
+- **Real tool-use agent, not a scripted command parser.** Claude drives an
+  actual multi-round tool-calling loop (calendar, file system, dev
+  commands, browser/OS control) and decides for itself which tools to call
+  and in what order — including judgment calls like "should this search
+  open a new browser tab, or reuse the one I already have open" based on
+  conversation context.
+- **Prompt caching wired in for cost, not just correctness** — system
+  prompt, ~35 tool schemas, and growing conversation history all carry
+  cache breakpoints, since those are re-sent on every single request.
+- **Fully local speech pipeline**: wake-word detection (openWakeWord) and
+  transcription (OpenAI's open-source Whisper model) both run on-device —
+  no cloud STT dependency, no per-request transcription cost.
+- **Real integrations, not stubs**: Google Calendar (OAuth2, direct REST),
+  Canvas LMS (assignments + grades), Apple Reminders (AppleScript), and a
+  companion fitness tracker service — all exposed as tools the agent can
+  actually call.
+- **Batch-transcribe-and-reformat lecture notes**: record a class or
+  meeting with no length cap, then one Whisper pass + one Claude call turns
+  the raw transcript into organized, exam-ready study notes.
+- **A persona with an actual spec.** `script.md` defines the agent's voice
+  as a set of reference dialogues and distilled behavioral principles (go
+  quiet while working, lead with the headline, one sharp clarifying
+  question, own mistakes plainly) — the system prompt implements it
+  directly, not vibes.
+- Sentence-pipelined TTS (synthesize the next sentence while the current
+  one plays — sub-second time-to-first-audio instead of waiting on the
+  whole response), a serialized speech queue instead of a
+  silently-drops-audio race, and a particle-field UI that visibly reacts
+  while the agent is actually speaking.
+- 60+ automated tests (`pytest`), all mocked at the network/subprocess
+  boundary — no API cost to run the suite.
 
-| Tier | What it does | How |
+## Architecture
+
+```
+  wake_system_integrated.py                    Electron desktop app
+  (mic -> wake word -> Whisper)   -- wake -->   (frontend/) -- spawns and
+                                  <- speaking -- owns the backend + voice
+              |                                 pipeline, jumps to front
+              | HTTP                            on wake word
+              v
+  ------------------------------------------------------------------
+  FastAPI backend (jarvis/main.py)
+  ConversationHandler -> Claude tool-use loop -> AgentToolRegistry
+  Session memory  |  prompt caching  |  TTS (ElevenLabs / macOS say)
+  ------------------------------------------------------------------
+              |
+   -----------+-------------------+-------------------------
+   |                              |                          |
+   v                              v                          v
+Google / Canvas /         macOS automation            MCP tool server
+Reminders adapters        (AppleScript, screen         (jarvis/mcp/server.py)
+                           vision via Claude)           -- stdio transport for
+                                                         external MCP clients
+```
+
+### Model routing
+
+`Router.classify` (`jarvis/router/router.py`) is a cheap, non-LLM
+keyword/heuristic pass — routing itself never costs a model call — and maps
+each request to a Claude model via `config/model-policy.yaml`:
+
+| Route class | Model | Use |
 |---|---|---|
-| **1. Reflex** | "Is anything happening" | Pixel-diffing (`MotionDetector`) gates a pluggable object detector (`ObjectDetector`) — no model call at all |
-| **2. Fast commands** | "Open Chrome", "set a timer" | Local intent-matching (`Router.classify` + `DeviceActions`) executes directly, no LLM in the loop |
-| **3. Agentic chaining** | Multi-step tasks needing judgment | A facet-routed local model reasons over tools exposed via **MCP** (`jarvis/mcp/server.py`) |
-| **4. Vision-grounded fallback** | Actions with no clean API (GUI automation) | Screenshot + vision-model grounding (`ToolExecutor.click_element`) |
+| `direct_command` / `trivial` | Claude Haiku 4.5 | Quick factual lookups, one-liners |
+| `normal` | Claude Sonnet 5 | Everyday conversation, tool-use loop |
+| `hard` | Claude Opus 5 | Multi-step reasoning, planning, coding, research |
 
-Tier 3 is where the **model mesh** lives — see below.
+No local model weights anywhere — reasoning is 100% the Anthropic API.
 
-## The model mesh
+## What it can do
 
-Rather than one model handling every request, requests are classified by
-*task type* (not just difficulty) and routed to a specialist:
-
-| Facet | Task | Model | Resident |
-|---|---|---|---|
-| `planner` | Brainstorming, outlines, project breakdown | Qwen 3.5 9B Instruct (4-bit) | On demand |
-| `coder` | Code generation, debugging, refactors | Qwen2.5-Coder 7B Instruct (4-bit) | On demand |
-| `fast` | Autocomplete, commit messages, quick utility | Llama 3.2 3B (4-bit) | Always loaded |
-
-All three are served through **Ollama**, which handles per-model load/evict
-so the three specialists share a 16GB RAM budget without a hand-rolled
-scheduler — `fast` stays warm, `planner`/`coder` swap in on demand and are
-never resident simultaneously. See `jarvis/router/router.py::classify_facet`
-for the (deliberately non-LLM) routing logic and
-`jarvis/engines/mesh/ollama_engine.py` for the serving client. Config lives
-in `config/model-policy.yaml` under `facets`.
-
-## Conversation loop
-
-- **Wake word**: local, always-on (`jarvis/asr/kws_porcupine.py`)
-- **STT**: local Whisper (`jarvis/asr/asr_whisper.py`)
-- **Reasoning**: routed through the tier-appropriate engine/facet
-- **TTS**: streamed response (`jarvis/conversation/conversation_handler.py`)
-
-`wake_system_integrated.py` is the standalone voice loop -- wake word →
-record → Whisper → backend call → speak, including the "yes sir" filler and
-the follow-up listening window -- talking to the backend over plain HTTP on
-`localhost:3000`.
-
-## Running it
-
-```
-python3 -m jarvis.main          # or ./start_backend.sh -- FastAPI backend
-python3 -m jarvis.mcp.server    # MCP tool server (stdio transport)
-python3 wake_system_integrated.py  # standalone voice loop
-pytest tests_py/                # test suite
-```
-
-## Build status
-
-This is an active local-first build, not a finished product. What's real
-today vs. scaffolded for what comes next:
-
-- **Working**: wake word detection (`jarvis/asr/kws_porcupine.py`, real
-  `pvporcupine` binding), Whisper STT (`jarvis/asr/asr_whisper.py`, real
-  `openai-whisper` binding), direct-command parsing and macOS automation,
-  the difficulty-based router/engine selection (`trivial`/`normal`/`hard` →
-  local/heavy), TTS output, the standalone `wake_system_integrated.py` voice
-  loop.
-- **Scaffolded, wired, pending real hardware/weights**: the facet mesh
-  (`OllamaEngine` + `classify_facet`) is implemented against Ollama's API
-  but needs the three models pulled locally to run; the reflex vision tier
-  (`MotionDetector` is fully functional against raw frame buffers,
-  `ObjectDetector` ships a stub backend pending a real YOLO/ONNX model); the
-  MCP tool server (`jarvis/mcp/server.py`) implements the real protocol
-  against the existing tool set, pending a live client session.
+- **Voice conversation** with real memory across a session (not
+  reconstructed per-turn), wake-word activation, and follow-up mode (keep
+  talking without repeating the wake word).
+- **Computer control**: open apps, drive the browser (search, tab
+  management), read/describe what's on screen (Claude vision), click UI
+  elements, run allowlisted shell/dev commands.
+- **Daily assignment ingest**: pulls Canvas assignments + grades, pushes
+  new due dates to Google Calendar, adds classes to Apple Reminders,
+  estimates workload, and can speak a morning briefing on a schedule.
+- **Calendar management**: create/update/delete events, recurring events.
+- **Lecture/meeting transcription** → structured study notes.
+- **R&D project workspace**: fabrication plans, artifact/notes tracking for
+  hardware projects.
+- **Coding partner**: read/write/edit files, run real dev commands
+  (git/pytest/npm/...), search a codebase — sandboxed to a workspace root.
 
 ## Tech stack
 
-Python, FastAPI, `llama-cpp-python` (direct GGUF inference), Ollama (mesh
-serving), Model Context Protocol SDK, Pydantic-validated YAML policy config,
-Porcupine (wake word), Whisper (STT), NumPy (reflex-tier vision).
+**Backend:** Python, FastAPI, Anthropic API (`anthropic` SDK), Model
+Context Protocol SDK, Pydantic-validated YAML policy config.
+**Speech:** openWakeWord (wake word), OpenAI Whisper (local STT),
+ElevenLabs / macOS `say` (TTS).
+**Desktop app:** Electron, vanilla JS (no framework), Canvas 2D (particle
+field).
+**Integrations:** Google Calendar API (OAuth2), Canvas LMS API, Apple
+Reminders (AppleScript/osascript).
+
+## Running it
+
+```bash
+python3.12 -m venv .venv && .venv/bin/pip install -e ".[dev]"
+cd frontend && npm install && cd ..
+cp env.example .env   # fill in ANTHROPIC_API_KEY at minimum
+
+cd frontend && npm start   # spawns the backend + voice pipeline, opens the app
+```
+
+See `STARTUP.md` for the full setup guide (including per-integration setup
+for Calendar/Canvas/Reminders) and manual/debug-mode instructions for
+running the backend and voice pipeline in separate terminals.
+
+```bash
+pytest tests_py/   # full test suite, no API cost (mocked at the network/subprocess boundary)
+```
+
+## Status
+
+Actively developed, personal daily-use project — not a polished product.
+The reflex-tier vision pipeline (`jarvis/vision/`: motion-gated object
+detection) is implemented against raw frame buffers but pending a real
+detector backend. Everything described above as "live" is real, working
+code with test coverage, not a stub.

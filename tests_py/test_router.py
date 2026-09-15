@@ -92,20 +92,3 @@ def test_confidence_bounds():
     for text in ("hello", "turn on lights", "explain quantum physics", "write a comprehensive analysis"):
         result = router.classify(text)
         assert 0 <= result.confidence <= 1
-
-
-# -- Facet classification (new: task-routed mesh, not in the original TS suite) --
-
-def test_facet_classifies_coder():
-    router = make_router()
-    assert router.classify_facet("debug this function, there's a syntax error") == "coder"
-
-
-def test_facet_classifies_planner():
-    router = make_router()
-    assert router.classify_facet("help me outline a project roadmap and break it down into steps") == "planner"
-
-
-def test_facet_classifies_fast_for_short_input():
-    router = make_router()
-    assert router.classify_facet("summarize this") == "fast"

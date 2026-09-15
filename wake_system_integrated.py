@@ -5,7 +5,6 @@ Complete pipeline: Wake → Listen → Transcribe → Process → Speak
 """
 
 import numpy as np
-import pvporcupine
 import sounddevice as sd
 import whisper
 import time
@@ -15,6 +14,8 @@ import json
 from collections import deque
 import threading
 import queue
+
+from jarvis.asr.kws_openwakeword import KwsConfig, KwsOpenWakeWord
 
 def load_env_variables():
     """Load environment variables from multiple sources"""
@@ -35,11 +36,10 @@ def load_env_variables():
             return True
     
     # Check if required environment variables are set
-    if not os.getenv('ELEVEN_API_KEY') or not os.getenv('PORCUPINE_ACCESS_KEY'):
+    if not os.getenv('ELEVEN_API_KEY'):
         print("❌ Error: Required API keys not found!")
         print("Please create a .env file with:")
         print("ELEVEN_API_KEY=your_elevenlabs_api_key_here")
-        print("PORCUPINE_ACCESS_KEY=your_porcupine_access_key_here")
         print("JARVIS_VOICE_ID=your_voice_id_here")
         return False
     
@@ -95,17 +95,17 @@ class JARVISIntegrated:
         self.sample_rate = 16000
         self.backend_url = "http://localhost:3000"
         self.session_id = "jarvis_main"
+        # The Electron desktop app runs a tiny local HTTP listener (see
+        # frontend/main.js's startWakeListener) purely to bring its window
+        # to the front the instant the wake word fires -- separate from
+        # self.backend_url since that's the FastAPI server, not the app UI.
+        self.wake_notify_url = f"http://127.0.0.1:{os.getenv('JARVIS_WAKE_PORT', '3131')}/wake"
         
-        # Porcupine wake word
-        self.access_key = os.getenv('PORCUPINE_ACCESS_KEY')
-        if not self.access_key:
-            raise ValueError("PORCUPINE_ACCESS_KEY environment variable not set")
-        
-        self.porcupine = pvporcupine.create(
-            access_key=self.access_key,
-            keywords=["jarvis"],
-            sensitivities=[0.7]  # More sensitive to catch wake word better
-        )
+        # openWakeWord wake word (local, no access key).
+        self.kws = KwsOpenWakeWord(KwsConfig.from_env())
+        self.kws.initialize()
+        self.sample_rate = self.kws.get_sample_rate()
+        self.wakeword_frame_length = self.kws.get_frame_length()
         
         # Whisper ASR
         self.whisper = WhisperASR(model_size="base")  # base is good balance of speed/quality
@@ -118,6 +118,12 @@ class JARVISIntegrated:
         self.recording_start_time = 0
         self.silence_threshold = 0.003  # Lower = more sensitive to quiet speech
         self.silence_duration = 0
+        # How long you have to go quiet before JARVIS decides you're done
+        # talking and starts processing. Was hardcoded to 3.0s, which is most
+        # of the perceived "slowness" -- every single turn ate a flat 3s of
+        # dead air on top of actual model latency. Configurable via env since
+        # too low risks cutting you off mid-sentence during a natural pause.
+        self.silence_stop_seconds = float(os.getenv('JARVIS_SILENCE_STOP_SECONDS', '1.0'))
         self.max_recording_time = 15  # Max 15 seconds per command
         self.min_recording_time = 1.0  # Min 1 second to avoid cutting off
         self.energy_history = []  # Track energy to better detect speech
@@ -142,7 +148,10 @@ class JARVISIntegrated:
         self.stream = None
         
         print("🎤 Audio detection settings:")
+        print(f"   Wakeword models: {', '.join(self.kws.config.wakeword_models)}")
+        print(f"   Wakeword threshold: {self.kws.config.threshold}")
         print(f"   Silence threshold: {self.silence_threshold}")
+        print(f"   Silence stop delay: {self.silence_stop_seconds}s (JARVIS_SILENCE_STOP_SECONDS)")
         print(f"   Follow-up threshold: {self.follow_up_silence_threshold}")
         print(f"   Min recording time: {self.min_recording_time}s")
         print(f"   Max recording time: {self.max_recording_time}s")
@@ -177,8 +186,8 @@ class JARVISIntegrated:
             if chunk_energy < dynamic_threshold:
                 self.silence_duration += len(audio_chunk) / self.sample_rate
                 
-                # Stop recording after 3 seconds of silence
-                if self.silence_duration > 3.0:
+                # Stop recording once you've gone quiet long enough
+                if self.silence_duration > self.silence_stop_seconds:
                     self._stop_recording()
             else:
                 self.silence_duration = 0
@@ -203,18 +212,25 @@ class JARVISIntegrated:
         
         # Process wake word detection (only when not in follow-up mode, not recording, and not speaking)
         if not self.follow_up_mode and not self.is_recording and not self.is_speaking:
-            while len(self.frame_buffer) >= self.porcupine.frame_length:
-                frame = np.array(self.frame_buffer[:self.porcupine.frame_length])
-                self.frame_buffer[:] = self.frame_buffer[self.porcupine.frame_length:]
-                
-                # Convert to int16 for Porcupine
-                audio_int16 = (frame * 32768).astype(np.int16)
-                keyword_index = self.porcupine.process(audio_int16)
-                
-                if keyword_index >= 0:
+            while len(self.frame_buffer) >= self.wakeword_frame_length:
+                frame = np.array(self.frame_buffer[:self.wakeword_frame_length])
+                self.frame_buffer[:] = self.frame_buffer[self.wakeword_frame_length:]
+
+                kws_result = self.kws.process_frame(frame)
+                if kws_result.detected:
                     print("\n🎤 Wake word detected! Listening...")
+                    threading.Thread(target=self._notify_frontend_wake, daemon=True).start()
                     self._start_recording()
     
+    def _notify_frontend_wake(self):
+        """Tell the desktop app to bring its window to the front. Fire-and-forget
+        on a background thread (called from the audio callback) so a slow/dead
+        Electron app can never stall wake-word detection or recording."""
+        try:
+            requests.post(self.wake_notify_url, timeout=0.5)
+        except requests.exceptions.RequestException:
+            pass  # app not running / not the desktop build -- fine, voice pipeline doesn't depend on it
+
     def _start_recording(self, skip_confirmation=False):
         """Start recording user command"""
         if not skip_confirmation:
@@ -472,8 +488,7 @@ class JARVISIntegrated:
         if self.stream:
             self.stream.stop()
             self.stream.close()
-        if self.porcupine:
-            self.porcupine.delete()
+        self.kws.cleanup()
         print("JARVIS shutdown complete")
 
 def main():
@@ -489,7 +504,7 @@ def main():
         print("✅ Backend is running")
     except:
         print("❌ Error: JARVIS backend not running!")
-        print("Please run 'npm run dev' first")
+        print("Please run './start_backend.sh' or 'python3 -m jarvis.main' first")
         return
     
     try:

@@ -1,0 +1,162 @@
+/* ==========================================================================
+   J.A.R.V.I.S. FX -- shared "holographic HUD" design conventions.
+
+   This file is the base convention layer: every future panel (R&D project
+   workspace, CAD viewer, circuit sim results, etc.) should reuse these
+   classes/variables rather than inventing new motion/glow treatments, so
+   the whole app reads as one coherent futuristic interface as it grows.
+
+   Principles:
+   - Panels arrive with a soft holo fade/rise, never a hard cut.
+   - Interactive elements get a glow-on-hover/focus, matching the existing
+     .icon-btn / .round-btn / .pill-btn treatment already in styles.css.
+   - Ambient particle field (#jarvis-particles canvas) sits behind all UI
+     as a fixed full-viewport layer -- ties every screen together, subtle
+     enough not to distract from content.
+   - Respects prefers-reduced-motion throughout.
+   ========================================================================== */
+
+:root {
+  --fx-duration-fast: 0.18s;
+  --fx-duration: 0.35s;
+  --fx-duration-slow: 0.6s;
+  --fx-ease: cubic-bezier(0.16, 1, 0.3, 1); /* snappy-in, soft-out */
+  --fx-glow-soft: 0 0 18px var(--red-glow);
+  --fx-glow-strong: 0 0 32px var(--red-glow), 0 0 64px rgba(226, 28, 28, 0.2);
+}
+
+/* ---------- Ambient particle field ---------- */
+#jarvis-particles {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+/* Everything else in the app renders above the particle layer. */
+.topbar, .layout, .fitness-overlay {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- Holographic panel entrance ---------- */
+/* Apply to any card/section that mounts dynamically (new widgets, overlays,
+   modal-like panels). Static always-present cards don't need this. */
+.holo-in {
+  animation: holoIn var(--fx-duration-slow) var(--fx-ease) both;
+}
+
+@keyframes holoIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+    filter: blur(4px);
+  }
+  60% {
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ---------- Holo border sweep (for panels that need extra emphasis,
+   e.g. a newly-created R&D project card, a sim result just landed) ---------- */
+.holo-flash {
+  position: relative;
+  overflow: hidden;
+}
+
+.holo-flash::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(226, 28, 28, 0.35) 50%, transparent 70%);
+  transform: translateX(-120%);
+  animation: holoSweep 1.1s var(--fx-ease);
+}
+
+@keyframes holoSweep {
+  to { transform: translateX(120%); }
+}
+
+/* ---------- Scanline texture (subtle, use sparingly on "active"/"processing" panels) ---------- */
+.holo-scanlines {
+  position: relative;
+}
+
+.holo-scanlines::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 46, 46, 0.03) 0px,
+    rgba(255, 46, 46, 0.03) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  border-radius: inherit;
+}
+
+/* ---------- Glow-hover convention for anything interactive/clickable ---------- */
+.fx-interactive {
+  transition: border-color var(--fx-duration-fast) var(--fx-ease),
+              box-shadow var(--fx-duration-fast) var(--fx-ease),
+              transform var(--fx-duration-fast) var(--fx-ease);
+}
+
+.fx-interactive:hover {
+  border-color: var(--red-primary);
+  box-shadow: var(--fx-glow-soft);
+  transform: translateY(-1px);
+}
+
+.fx-interactive:active {
+  transform: translateY(0px) scale(0.98);
+}
+
+/* ---------- Status/loading pulse for "JARVIS is working" states ---------- */
+.fx-processing {
+  position: relative;
+}
+
+.fx-processing::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  border: 1px solid var(--red-primary);
+  animation: fxProcessingPulse 1.4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes fxProcessingPulse {
+  0%, 100% { opacity: 0.25; box-shadow: 0 0 0 rgba(226, 28, 28, 0); }
+  50% { opacity: 0.9; box-shadow: var(--fx-glow-soft); }
+}
+
+/* ---------- Data readout text (monospace, techy numeric displays --
+   use for sim results, sensor readouts, telemetry) ---------- */
+.fx-readout {
+  font-family: "SF Mono", "JetBrains Mono", "Consolas", monospace;
+  letter-spacing: 0.5px;
+  color: var(--red-bright);
+  text-shadow: 0 0 8px var(--red-glow);
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .holo-in, .holo-flash::after, .fx-processing::before {
+    animation: none !important;
+  }
+  .fx-interactive {
+    transition: none !important;
+  }
+  #jarvis-particles {
+    display: none;
+  }
+}

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Fires scripts/daily_briefing.sh once a morning via launchd.
+
+  Setup:
+    1. cp scripts/com.jarvis.dailybriefing.plist.example ~/Library/LaunchAgents/com.jarvis.dailybriefing.plist
+    2. Edit the two /Users/rahulremany/Desktop/JARVIS paths below if your checkout lives elsewhere.
+    3. launchctl load ~/Library/LaunchAgents/com.jarvis.dailybriefing.plist
+
+  JARVIS's main server (jarvis/main.py) must already be running for the
+  8am fire to succeed -- this just calls its HTTP API, it doesn't start it.
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.jarvis.dailybriefing</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>/Users/rahulremany/Desktop/JARVIS/scripts/daily_briefing.sh</string>
+  </array>
+
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>8</integer>
+    <key>Minute</key>
+    <integer>0</integer>
+  </dict>
+
+  <key>StandardOutPath</key>
+  <string>/Users/rahulremany/Desktop/JARVIS/.jarvis_state/daily_briefing.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/rahulremany/Desktop/JARVIS/.jarvis_state/daily_briefing.err.log</string>
+</dict>
+</plist>

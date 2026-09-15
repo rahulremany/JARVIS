@@ -1,5 +1,5 @@
 routing:
-  escalate_tags: 
+  escalate_tags:
     - "multi_step_reasoning"
     - "long_tool_plan"
   hard_keywords:
@@ -17,66 +17,27 @@ routing:
     - "plan a project"
   default_class: "normal"
 
+# Difficulty tier -> Claude model. Router.classify() (jarvis/router/router.py)
+# picks the tier from the request text; EngineSelector dispatches to the
+# matching model here. No local weights, no load/evict scheduling -- Anthropic
+# hosts all three.
 models:
   router:
-    candidates: ["llama3.1:8b-instruct-q4_K_M"]
-    max_tokens: 32
-    ctx: 512
-    temperature: 0.0
-    timeout_ms: 2000
-  
-  primary:
-    candidates: ["llama3.1:8b-instruct-q4_K_M"]
-    max_tokens: 256
-    ctx: 1536
-    temperature: 0.2
-    timeout_ms: 8000
-  
-  heavy:
-    candidates_cpu: ["mixtral:8x7b-instruct-q4_K_M"]
+    id: "claude-haiku-4-5"
     max_tokens: 512
-    ctx: 4096
     temperature: 0.3
-    timeout_ms: 30000
 
-# Task-routed local mesh — one specialist model per facet, served through
-# Ollama so each is loaded/evicted on demand instead of held resident together.
-# Sized for a 16GB unified-memory machine: only `fast` stays warm at all times;
-# `planner` and `coder` swap in on demand (never both loaded at once).
-facets:
-  planner:
-    model: "qwen3.5:9b-instruct-q4_K_M"
-    engine: "ollama"
-    always_loaded: false
-    max_tokens: 1024
-    ctx: 8192
-    temperature: 0.4
+  primary:
+    id: "claude-sonnet-5"
+    max_tokens: 2048
+    temperature: 0.5
 
-  coder:
-    model: "qwen2.5-coder:7b-instruct-q4_K_M"
-    engine: "ollama"
-    always_loaded: false
-    max_tokens: 1024
-    ctx: 4096
-    temperature: 0.1
-
-  fast:
-    model: "llama3.2:3b-instruct-q4_K_M"
-    engine: "ollama"
-    always_loaded: true
-    max_tokens: 128
-    ctx: 2048
-    temperature: 0.2
-
-autotune:
-  first_token_threshold_ms: 1500
-  total_threshold_ms: 8000
-  success_rate_threshold: 0.85
+  heavy:
+    id: "claude-opus-5"
+    max_tokens: 4096
+    temperature: 0.5
 
 policy:
   mode: "dev"
   fallback_enabled: true
   log_routing_decisions: true
-
-endpoints:
-  vllm_base_url: ""

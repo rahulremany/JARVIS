@@ -1,0 +1,1410 @@
+[
+  {
+    "id": "project-1788554242125",
+    "name": "Camera Mouse",
+    "objective": "Hand gestures control macOS cursor",
+    "status": "idea",
+    "constraints": [],
+    "budget": null,
+    "deadline": "",
+    "fabrication_plan": {
+      "project_name": "Camera Mouse",
+      "objective": "Hand gestures control macOS cursor",
+      "constraints": [],
+      "budget": null,
+      "deadline": "",
+      "phases": [
+        {
+          "name": "Plan",
+          "tasks": [
+            "Define requirements and acceptance criteria",
+            "Draft materials/BOM and sourcing list"
+          ]
+        },
+        {
+          "name": "Build",
+          "tasks": [
+            "Create fabrication setup checklist",
+            "Prototype first pass and capture issues"
+          ]
+        },
+        {
+          "name": "Debug",
+          "tasks": [
+            "Run debug + calibration cycle"
+          ]
+        },
+        {
+          "name": "Ship",
+          "tasks": [
+            "Finalize build notes and handoff checklist"
+          ]
+        }
+      ],
+      "risk_checks": [
+        "Power/thermal safety validated",
+        "Tooling and fixture alignment verified",
+        "Materials tolerances confirmed",
+        "Fallback plan for failed part or missed lead time"
+      ],
+      "next_actions": [
+        "Lock BOM and order long-lead parts",
+        "Schedule build block on calendar",
+        "Create test checklist before first fabrication run"
+      ]
+    },
+    "artifacts": [],
+    "notes": [
+      {
+        "timestamp": "2026-09-04T15:37:22.125401",
+        "text": "Need stable pinch gesture detector"
+      }
+    ],
+    "created_at": "2026-09-04T15:37:22.125290",
+    "updated_at": "2026-09-04T15:37:22.125432"
+  },
+  {
+    "id": "project-1788554252186",
+    "name": "Camera Mouse",
+    "objective": "Hand gestures control macOS cursor",
+    "status": "idea",
+    "constraints": [],
+    "budget": null,
+    "deadline": "",
+    "fabrication_plan": {
+      "project_name": "Camera Mouse",
+      "objective": "Hand gestures control macOS cursor",
+      "constraints": [],
+      "budget": null,
+      "deadline": "",
+      "phases": [
+        {
+          "name": "Plan",
+          "tasks": [
+            "Define requirements and acceptance criteria",
+            "Draft materials/BOM and sourcing list"
+          ]
+        },
+        {
+          "name": "Build",
+          "tasks": [
+            "Create fabrication setup checklist",
+            "Prototype first pass and capture issues"
+          ]
+        },
+        {
+          "name": "Debug",
+          "tasks": [
+            "Run debug + calibration cycle"
+          ]
+        },
+        {
+          "name": "Ship",
+          "tasks": [
+            "Finalize build notes and handoff checklist"
+          ]
+        }
+      ],
+      "risk_checks": [
+        "Power/thermal safety validated",
+        "Tooling and fixture alignment verified",
+        "Materials tolerances confirmed",
+        "Fallback plan for failed part or missed lead time"
+      ],
+      "next_actions": [
+        "Lock BOM and order long-lead parts",
+        "Schedule build block on calendar",
+        "Create test checklist before first fabrication run"
+      ]
+    },
+    "artifacts": [],
+    "notes": [
+      {
+        "timestamp": "2026-09-04T15:37:32.186883",
+        "text": "Need stable pinch gesture detector"
+      }
+    ],
+    "created_at": "2026-09-04T15:37:32.186582",
+    "updated_at": "2026-09-04T15:37:32.186917"
+  },
+  {
+    "id": "project-1788554407614",
+    "name": "Camera Mouse",
+    "objective": "Hand gestures control macOS cursor",
+    "status": "idea",
+    "constraints": [],
+    "budget": null,
+    "deadline": "",
+    "fabrication_plan": {
+      "project_name": "Camera Mouse",
+      "objective": "Hand gestures control macOS cursor",
+      "constraints": [],
+      "budget": null,
+      "deadline": "",
+      "phases": [
+        {
+          "name": "Plan",
+          "tasks": [
+            "Define requirements and acceptance criteria",
+            "Draft materials/BOM and sourcing list"
+          ]
+        },
+        {
+          "name": "Build",
+          "tasks": [
+            "Create fabrication setup checklist",
+            "Prototype first pass and capture issues"
+          ]
+        },
+        {
+          "name": "Debug",
+          "tasks": [
+            "Run debug + calibration cycle"
+          ]
+        },
+        {
+          "name": "Ship",
+          "tasks": [
+            "Finalize build notes and handoff checklist"
+          ]
+        }
+      ],
+      "risk_checks": [
+        "Power/thermal safety validated",
+        "Tooling and fixture alignment verified",
+        "Materials tolerances confirmed",
+        "Fallback plan for failed part or missed lead time"
+      ],
+      "next_actions": [
+        "Lock BOM and order long-lead parts",
+        "Schedule build block on calendar",
+        "Create test checklist before first fabrication run"
+      ]
+    },
+    "artifacts": [],
+    "notes": [
+      {
+        "timestamp": "2026-09-04T15:40:07.614442",
+        "text": "Need stable pinch gesture detector"
+      }
+    ],
+    "created_at": "2026-09-04T15:40:07.614072",
+    "updated_at": "2026-09-04T15:40:07.614485"
+  },
+  {
+    "id": "project-1788556249673",
+    "name": "Camera Mouse",
+    "objective": "Hand gestures control macOS cursor",
+    "status": "idea",
+    "constraints": [],
+    "budget": null,
+    "deadline": "",
+    "fabrication_plan": {
+      "project_name": "Camera Mouse",
+      "objective": "Hand gestures control macOS cursor",
+      "constraints": [],
+      "budget": null,
+      "deadline": "",
+      "phases": [
+        {
+          "name": "Plan",
+          "tasks": [
+            "Define requirements and acceptance criteria",
+            "Draft materials/BOM and sourcing list"
+          ]
+        },
+        {
+          "name": "Build",
+          "tasks": [
+            "Create fabrication setup checklist",
+            "Prototype first pass and capture issues"
+          ]
+        },
+        {
+          "name": "Debug",
+          "tasks": [
+            "Run debug + calibration cycle"
+          ]
+        },
+        {
+          "name": "Ship",
+          "tasks": [
+            "Finalize build notes and handoff checklist"
+          ]
+        }
+      ],
+      "risk_checks": [
+        "Power/thermal safety validated",
+        "Tooling and fixture alignment verified",
+        "Materials tolerances confirmed",
+        "Fallback plan for failed part or missed lead time"
+      ],
+      "next_actions": [
+        "Lock BOM and order long-lead parts",
+        "Schedule build block on calendar",
+        "Create test checklist before first fabrication run"
+      ]
+    },
+    "artifacts": [],
+    "notes": [
+      {
+        "timestamp": "2026-09-04T16:10:49.674154",
+        "text": "Need stable pinch gesture detector"
+      }
+    ],
+    "created_at": "2026-09-04T16:10:49.673756",
+    "updated_at": "2026-09-04T16:10:49.674191"
+  },
+  {
+    "id": "project-1788556295128",
+    "name": "Camera Mouse",
+    "objective": "Hand gestures control macOS cursor",
+    "status": "idea",
+    "constraints": [],
+    "budget": null,
+    "deadline": "",
+    "fabrication_plan": {
+      "project_name": "Camera Mouse",
+      "objective": "Hand gestures control macOS cursor",
+      "constraints": [],
+      "budget": null,
+      "deadline": "",
+      "phases": [
+        {
+          "name": "Plan",
+          "tasks": [
+            "Define requirements and acceptance criteria",
+            "Draft materials/BOM and sourcing list"
+          ]
+        },
+        {
+          "name": "Build",
+          "tasks": [
+            "Create fabrication setup checklist",
+            "Prototype first pass and capture issues"
+          ]
+        },
+        {
+          "name": "Debug",
+          "tasks": [
+            "Run debug + calibration cycle"
+          ]
+        },
+        {
+          "name": "Ship",
+          "tasks": [
+            "Finalize build notes and handoff checklist"
+          ]
+        }
+      ],
+      "risk_checks": [
+        "Power/thermal safety validated",
+        "Tooling and fixture alignment verified",
+        "Materials tolerances confirmed",
+        "Fallback plan for failed part or missed lead time"
+      ],
+      "next_actions": [
+        "Lock BOM and order long-lead parts",
+        "Schedule build block on calendar",
+        "Create test checklist before first fabrication run"
+      ]
+    },
+    "artifacts": [],
+    "notes": [
+      {
+        "timestamp": "2026-09-04T16:11:35.129317",
+        "text": "Need stable pinch gesture detector"
+      }
+    ],
+    "created_at": "2026-09-04T16:11:35.128942",
+    "updated_at": "2026-09-04T16:11:35.129363"
+  },
+  {
+    "id": "project-1788556454616",
+    "name": "Camera Mouse",
+    "objective": "Hand gestures control macOS cursor",
+    "status": "idea",
+    "constraints": [],
+    "budget": null,
+    "deadline": "",
+    "fabrication_plan": {
+      "project_name": "Camera Mouse",
+      "objective": "Hand gestures control macOS cursor",
+      "constraints": [],
+      "budget": null,
+      "deadline": "",
+      "phases": [
+        {
+          "name": "Plan",
+          "tasks": [
+            "Define requirements and acceptance criteria",
+            "Draft materials/BOM and sourcing list"
+          ]
+        },
+        {
+          "name": "Build",
+          "tasks": [
+            "Create fabrication setup checklist",
+            "Prototype first pass and capture issues"
+          ]
+        },
+        {
+          "name": "Debug",
+          "tasks": [
+            "Run debug + calibration cycle"
+          ]
+        },
+        {
+          "name": "Ship",
+          "tasks": [
+            "Finalize build notes and handoff checklist"
+          ]
+        }
+      ],
+      "risk_checks": [
+        "Power/thermal safety validated",
+        "Tooling and fixture alignment verified",
+        "Materials tolerances confirmed",
+        "Fallback plan for failed part or missed lead time"
+      ],
+      "next_actions": [
+        "Lock BOM and order long-lead parts",
+        "Schedule build block on calendar",
+        "Create test checklist before first fabrication run"
+      ]
+    },
+    "artifacts": [],
+    "notes": [
+      {
+        "timestamp": "2026-09-04T16:14:14.617674",
+        "text": "Need stable pinch gesture detector"
+      }
+    ],
+    "created_at": "2026-09-04T16:14:14.616967",
+    "updated_at": "2026-09-04T16:14:14.617731"
+  },
+  {
+    "id": "project-1788556792497",
+    "name": "Camera Mouse",
+    "objective": "Hand gestures control macOS cursor",
+    "status": "idea",
+    "constraints": [],
+    "budget": null,
+    "deadline": "",
+    "fabrication_plan": {
+      "project_name": "Camera Mouse",
+      "objective": "Hand gestures control macOS cursor",
+      "constraints": [],
+      "budget": null,
+      "deadline": "",
+      "phases": [
+        {
+          "name": "Plan",
+          "tasks": [
+            "Define requirements and acceptance criteria",
+            "Draft materials/BOM and sourcing list"
+          ]
+        },
+        {
+          "name": "Build",
+          "tasks": [
+            "Create fabrication setup checklist",
+            "Prototype first pass and capture issues"
+          ]
+        },
+        {
+          "name": "Debug",
+          "tasks": [
+            "Run debug + calibration cycle"
+          ]
+        },
+        {
+          "name": "Ship",
+          "tasks": [
+            "Finalize build notes and handoff checklist"
+          ]
+        }
+      ],
+      "risk_checks": [
+        "Power/thermal safety validated",
+        "Tooling and fixture alignment verified",
+        "Materials tolerances confirmed",
+        "Fallback plan for failed part or missed lead time"
+      ],
+      "next_actions": [
+        "Lock BOM and order long-lead parts",
+        "Schedule build block on calendar",
+        "Create test checklist before first fabrication run"
+      ]
+    },
+    "artifacts": [],
+    "notes": [
+      {
+        "timestamp": "2026-09-04T16:19:52.499819",
+        "text": "Need stable pinch gesture detector"
+      }
+    ],
+    "created_at": "2026-09-04T16:19:52.497026",
+    "updated_at": "2026-09-04T16:19:52.499885"
+  },
+  {
+    "id": "project-1788997661747",
+    "name": "Camera Mouse",
+    "objective": "Hand gestures control macOS cursor",
+    "status": "idea",
+    "constraints": [],
+    "budget": null,
+    "deadline": "",
+    "fabrication_plan": {
+      "project_name": "Camera Mouse",
+      "objective": "Hand gestures control macOS cursor",
+      "constraints": [],
+      "budget": null,
+      "deadline": "",
+      "phases": [
+        {
+          "name": "Plan",
+          "tasks": [
+            "Define requirements and acceptance criteria",
+            "Draft materials/BOM and sourcing list"
+          ]
+        },
+        {
+          "name": "Build",
+          "tasks": [
+            "Create fabrication setup checklist",
+            "Prototype first pass and capture issues"
+          ]
+        },
+        {
+          "name": "Debug",
+          "tasks": [
+            "Run debug + calibration cycle"
+          ]
+        },
+        {
+          "name": "Ship",
+          "tasks": [
+            "Finalize build notes and handoff checklist"
+          ]
+        }
+      ],
+      "risk_checks": [
+        "Power/thermal safety validated",
+        "Tooling and fixture alignment verified",
+        "Materials tolerances confirmed",
+        "Fallback plan for failed part or missed lead time"
+      ],
+      "next_actions": [
+        "Lock BOM and order long-lead parts",
+        "Schedule build block on calendar",
+        "Create test checklist before first fabrication run"
+      ]
+    },
+    "artifacts": [],
+    "notes": [
+      {
+        "timestamp": "2026-09-09T18:47:41.747796",
+        "text": "Need stable pinch gesture detector"
+      }
+    ],
+    "created_at": "2026-09-09T18:47:41.747375",
+    "updated_at": "2026-09-09T18:47:41.747843"
+  },
+  {
+    "id": "project-1788997788498",
+    "name": "Camera Mouse",
+    "objective": "Hand gestures control macOS cursor",
+    "status": "idea",
+    "constraints": [],
+    "budget": null,
+    "deadline": "",
+    "fabrication_plan": {
+      "project_name": "Camera Mouse",
+      "objective": "Hand gestures control macOS cursor",
+      "constraints": [],
+      "budget": null,
+      "deadline": "",
+      "phases": [
+        {
+          "name": "Plan",
+          "tasks": [
+            "Define requirements and acceptance criteria",
+            "Draft materials/BOM and sourcing list"
+          ]
+        },
+        {
+          "name": "Build",
+          "tasks": [
+            "Create fabrication setup checklist",
+            "Prototype first pass and capture issues"
+          ]
+        },
+        {
+          "name": "Debug",
+          "tasks": [
+            "Run debug + calibration cycle"
+          ]
+        },
+        {
+          "name": "Ship",
+          "tasks": [
+            "Finalize build notes and handoff checklist"
+          ]
+        }
+      ],
+      "risk_checks": [
+        "Power/thermal safety validated",
+        "Tooling and fixture alignment verified",
+        "Materials tolerances confirmed",
+        "Fallback plan for failed part or missed lead time"
+      ],
+      "next_actions": [
+        "Lock BOM and order long-lead parts",
+        "Schedule build block on calendar",
+        "Create test checklist before first fabrication run"
+      ]
+    },
+    "artifacts": [],
+    "notes": [
+      {
+        "timestamp": "2026-09-09T18:49:48.499406",
+        "text": "Need stable pinch gesture detector"
+      }
+    ],
+    "created_at": "2026-09-09T18:49:48.498981",
+    "updated_at": "2026-09-09T18:49:48.499459"
+  },
+  {
+    "id": "project-1788998472763",
+    "name": "Camera Mouse",
+    "objective": "Hand gestures control macOS cursor",
+    "status": "idea",
+    "constraints": [],
+    "budget": null,
+    "deadline": "",
+    "fabrication_plan": {
+      "project_name": "Camera Mouse",
+      "objective": "Hand gestures control macOS cursor",
+      "constraints": [],
+      "budget": null,
+      "deadline": "",
+      "phases": [
+        {
+          "name": "Plan",
+          "tasks": [
+            "Define requirements and acceptance criteria",
+            "Draft materials/BOM and sourcing list"
+          ]
+        },
+        {
+          "name": "Build",
+          "tasks": [
+            "Create fabrication setup checklist",
+            "Prototype first pass and capture issues"
+          ]
+        },
+        {
+          "name": "Debug",
+          "tasks": [
+            "Run debug + calibration cycle"
+          ]
+        },
+        {
+          "name": "Ship",
+          "tasks": [
+            "Finalize build notes and handoff checklist"
+          ]
+        }
+      ],
+      "risk_checks": [
+        "Power/thermal safety validated",
+        "Tooling and fixture alignment verified",
+        "Materials tolerances confirmed",
+        "Fallback plan for failed part or missed lead time"
+      ],
+      "next_actions": [
+        "Lock BOM and order long-lead parts",
+        "Schedule build block on calendar",
+        "Create test checklist before first fabrication run"
+      ]
+    },
+    "artifacts": [],
+    "notes": [
+      {
+        "timestamp": "2026-09-09T19:01:12.764156",
+        "text": "Need stable pinch gesture detector"
+      }
+    ],
+    "created_at": "2026-09-09T19:01:12.763796",
+    "updated_at": "2026-09-09T19:01:12.764208"
+  },
+  {
+    "id": "project-1789381017566",
+    "name": "Camera Mouse",
+    "objective": "Hand gestures control macOS cursor",
+    "status": "idea",
+    "constraints": [],
+    "budget": null,
+    "deadline": "",
+    "fabrication_plan": {
+      "project_name": "Camera Mouse",
+      "objective": "Hand gestures control macOS cursor",
+      "constraints": [],
+      "budget": null,
+      "deadline": "",
+      "phases": [
+        {
+          "name": "Plan",
+          "tasks": [
+            "Define requirements and acceptance criteria",
+            "Draft materials/BOM and sourcing list"
+          ]
+        },
+        {
+          "name": "Build",
+          "tasks": [
+            "Create fabrication setup checklist",
+            "Prototype first pass and capture issues"
+          ]
+        },
+        {
+          "name": "Debug",
+          "tasks": [
+            "Run debug + calibration cycle"
+          ]
+        },
+        {
+          "name": "Ship",
+          "tasks": [
+            "Finalize build notes and handoff checklist"
+          ]
+        }
+      ],
+      "risk_checks": [
+        "Power/thermal safety validated",
+        "Tooling and fixture alignment verified",
+        "Materials tolerances confirmed",
+        "Fallback plan for failed part or missed lead time"
+      ],
+      "next_actions": [
+        "Lock BOM and order long-lead parts",
+        "Schedule build block on calendar",
+        "Create test checklist before first fabrication run"
+      ]
+    },
+    "artifacts": [],
+    "notes": [
+      {
+        "timestamp": "2026-09-14T05:16:57.567144",
+        "text": "Need stable pinch gesture detector"
+      }
+    ],
+    "created_at": "2026-09-14T05:16:57.566366",
+    "updated_at": "2026-09-14T05:16:57.567209"
+  },
+  {
+    "id": "project-1789381534958",
+    "name": "Camera Mouse",
+    "objective": "Hand gestures control macOS cursor",
+    "status": "idea",
+    "constraints": [],
+    "budget": null,
+    "deadline": "",
+    "fabrication_plan": {
+      "project_name": "Camera Mouse",
+      "objective": "Hand gestures control macOS cursor",
+      "constraints": [],
+      "budget": null,
+      "deadline": "",
+      "phases": [
+        {
+          "name": "Plan",
+          "tasks": [
+            "Define requirements and acceptance criteria",
+            "Draft materials/BOM and sourcing list"
+          ]
+        },
+        {
+          "name": "Build",
+          "tasks": [
+            "Create fabrication setup checklist",
+            "Prototype first pass and capture issues"
+          ]
+        },
+        {
+          "name": "Debug",
+          "tasks": [
+            "Run debug + calibration cycle"
+          ]
+        },
+        {
+          "name": "Ship",
+          "tasks": [
+            "Finalize build notes and handoff checklist"
+          ]
+        }
+      ],
+      "risk_checks": [
+        "Power/thermal safety validated",
+        "Tooling and fixture alignment verified",
+        "Materials tolerances confirmed",
+        "Fallback plan for failed part or missed lead time"
+      ],
+      "next_actions": [
+        "Lock BOM and order long-lead parts",
+        "Schedule build block on calendar",
+        "Create test checklist before first fabrication run"
+      ]
+    },
+    "artifacts": [],
+    "notes": [
+      {
+        "timestamp": "2026-09-14T05:25:34.959179",
+        "text": "Need stable pinch gesture detector"
+      }
+    ],
+    "created_at": "2026-09-14T05:25:34.958431",
+    "updated_at": "2026-09-14T05:25:34.959291"
+  },
+  {
+    "id": "project-1789381605380",
+    "name": "Camera Mouse",
+    "objective": "Hand gestures control macOS cursor",
+    "status": "idea",
+    "constraints": [],
+    "budget": null,
+    "deadline": "",
+    "fabrication_plan": {
+      "project_name": "Camera Mouse",
+      "objective": "Hand gestures control macOS cursor",
+      "constraints": [],
+      "budget": null,
+      "deadline": "",
+      "phases": [
+        {
+          "name": "Plan",
+          "tasks": [
+            "Define requirements and acceptance criteria",
+            "Draft materials/BOM and sourcing list"
+          ]
+        },
+        {
+          "name": "Build",
+          "tasks": [
+            "Create fabrication setup checklist",
+            "Prototype first pass and capture issues"
+          ]
+        },
+        {
+          "name": "Debug",
+          "tasks": [
+            "Run debug + calibration cycle"
+          ]
+        },
+        {
+          "name": "Ship",
+          "tasks": [
+            "Finalize build notes and handoff checklist"
+          ]
+        }
+      ],
+      "risk_checks": [
+        "Power/thermal safety validated",
+        "Tooling and fixture alignment verified",
+        "Materials tolerances confirmed",
+        "Fallback plan for failed part or missed lead time"
+      ],
+      "next_actions": [
+        "Lock BOM and order long-lead parts",
+        "Schedule build block on calendar",
+        "Create test checklist before first fabrication run"
+      ]
+    },
+    "artifacts": [],
+    "notes": [
+      {
+        "timestamp": "2026-09-14T05:26:45.381149",
+        "text": "Need stable pinch gesture detector"
+      }
+    ],
+    "created_at": "2026-09-14T05:26:45.380597",
+    "updated_at": "2026-09-14T05:26:45.381214"
+  },
+  {
+    "id": "project-1789382677149",
+    "name": "Camera Mouse",
+    "objective": "Hand gestures control macOS cursor",
+    "status": "idea",
+    "constraints": [],
+    "budget": null,
+    "deadline": "",
+    "fabrication_plan": {
+      "project_name": "Camera Mouse",
+      "objective": "Hand gestures control macOS cursor",
+      "constraints": [],
+      "budget": null,
+      "deadline": "",
+      "phases": [
+        {
+          "name": "Plan",
+          "tasks": [
+            "Define requirements and acceptance criteria",
+            "Draft materials/BOM and sourcing list"
+          ]
+        },
+        {
+          "name": "Build",
+          "tasks": [
+            "Create fabrication setup checklist",
+            "Prototype first pass and capture issues"
+          ]
+        },
+        {
+          "name": "Debug",
+          "tasks": [
+            "Run debug + calibration cycle"
+          ]
+        },
+        {
+          "name": "Ship",
+          "tasks": [
+            "Finalize build notes and handoff checklist"
+          ]
+        }
+      ],
+      "risk_checks": [
+        "Power/thermal safety validated",
+        "Tooling and fixture alignment verified",
+        "Materials tolerances confirmed",
+        "Fallback plan for failed part or missed lead time"
+      ],
+      "next_actions": [
+        "Lock BOM and order long-lead parts",
+        "Schedule build block on calendar",
+        "Create test checklist before first fabrication run"
+      ]
+    },
+    "artifacts": [],
+    "notes": [
+      {
+        "timestamp": "2026-09-14T05:44:37.150733",
+        "text": "Need stable pinch gesture detector"
+      }
+    ],
+    "created_at": "2026-09-14T05:44:37.149843",
+    "updated_at": "2026-09-14T05:44:37.150800"
+  },
+  {
+    "id": "project-1789382741085",
+    "name": "Camera Mouse",
+    "objective": "Hand gestures control macOS cursor",
+    "status": "idea",
+    "constraints": [],
+    "budget": null,
+    "deadline": "",
+    "fabrication_plan": {
+      "project_name": "Camera Mouse",
+      "objective": "Hand gestures control macOS cursor",
+      "constraints": [],
+      "budget": null,
+      "deadline": "",
+      "phases": [
+        {
+          "name": "Plan",
+          "tasks": [
+            "Define requirements and acceptance criteria",
+            "Draft materials/BOM and sourcing list"
+          ]
+        },
+        {
+          "name": "Build",
+          "tasks": [
+            "Create fabrication setup checklist",
+            "Prototype first pass and capture issues"
+          ]
+        },
+        {
+          "name": "Debug",
+          "tasks": [
+            "Run debug + calibration cycle"
+          ]
+        },
+        {
+          "name": "Ship",
+          "tasks": [
+            "Finalize build notes and handoff checklist"
+          ]
+        }
+      ],
+      "risk_checks": [
+        "Power/thermal safety validated",
+        "Tooling and fixture alignment verified",
+        "Materials tolerances confirmed",
+        "Fallback plan for failed part or missed lead time"
+      ],
+      "next_actions": [
+        "Lock BOM and order long-lead parts",
+        "Schedule build block on calendar",
+        "Create test checklist before first fabrication run"
+      ]
+    },
+    "artifacts": [],
+    "notes": [
+      {
+        "timestamp": "2026-09-14T05:45:41.086428",
+        "text": "Need stable pinch gesture detector"
+      }
+    ],
+    "created_at": "2026-09-14T05:45:41.085656",
+    "updated_at": "2026-09-14T05:45:41.086514"
+  },
+  {
+    "id": "project-1789383161706",
+    "name": "Camera Mouse",
+    "objective": "Hand gestures control macOS cursor",
+    "status": "idea",
+    "constraints": [],
+    "budget": null,
+    "deadline": "",
+    "fabrication_plan": {
+      "project_name": "Camera Mouse",
+      "objective": "Hand gestures control macOS cursor",
+      "constraints": [],
+      "budget": null,
+      "deadline": "",
+      "phases": [
+        {
+          "name": "Plan",
+          "tasks": [
+            "Define requirements and acceptance criteria",
+            "Draft materials/BOM and sourcing list"
+          ]
+        },
+        {
+          "name": "Build",
+          "tasks": [
+            "Create fabrication setup checklist",
+            "Prototype first pass and capture issues"
+          ]
+        },
+        {
+          "name": "Debug",
+          "tasks": [
+            "Run debug + calibration cycle"
+          ]
+        },
+        {
+          "name": "Ship",
+          "tasks": [
+            "Finalize build notes and handoff checklist"
+          ]
+        }
+      ],
+      "risk_checks": [
+        "Power/thermal safety validated",
+        "Tooling and fixture alignment verified",
+        "Materials tolerances confirmed",
+        "Fallback plan for failed part or missed lead time"
+      ],
+      "next_actions": [
+        "Lock BOM and order long-lead parts",
+        "Schedule build block on calendar",
+        "Create test checklist before first fabrication run"
+      ]
+    },
+    "artifacts": [],
+    "notes": [
+      {
+        "timestamp": "2026-09-14T05:52:41.707782",
+        "text": "Need stable pinch gesture detector"
+      }
+    ],
+    "created_at": "2026-09-14T05:52:41.707001",
+    "updated_at": "2026-09-14T05:52:41.707856"
+  },
+  {
+    "id": "project-1789383791494",
+    "name": "Camera Mouse",
+    "objective": "Hand gestures control macOS cursor",
+    "status": "idea",
+    "constraints": [],
+    "budget": null,
+    "deadline": "",
+    "fabrication_plan": {
+      "project_name": "Camera Mouse",
+      "objective": "Hand gestures control macOS cursor",
+      "constraints": [],
+      "budget": null,
+      "deadline": "",
+      "phases": [
+        {
+          "name": "Plan",
+          "tasks": [
+            "Define requirements and acceptance criteria",
+            "Draft materials/BOM and sourcing list"
+          ]
+        },
+        {
+          "name": "Build",
+          "tasks": [
+            "Create fabrication setup checklist",
+            "Prototype first pass and capture issues"
+          ]
+        },
+        {
+          "name": "Debug",
+          "tasks": [
+            "Run debug + calibration cycle"
+          ]
+        },
+        {
+          "name": "Ship",
+          "tasks": [
+            "Finalize build notes and handoff checklist"
+          ]
+        }
+      ],
+      "risk_checks": [
+        "Power/thermal safety validated",
+        "Tooling and fixture alignment verified",
+        "Materials tolerances confirmed",
+        "Fallback plan for failed part or missed lead time"
+      ],
+      "next_actions": [
+        "Lock BOM and order long-lead parts",
+        "Schedule build block on calendar",
+        "Create test checklist before first fabrication run"
+      ]
+    },
+    "artifacts": [],
+    "notes": [
+      {
+        "timestamp": "2026-09-14T06:03:11.494966",
+        "text": "Need stable pinch gesture detector"
+      }
+    ],
+    "created_at": "2026-09-14T06:03:11.494191",
+    "updated_at": "2026-09-14T06:03:11.495042"
+  },
+  {
+    "id": "project-1789383811853",
+    "name": "Camera Mouse",
+    "objective": "Hand gestures control macOS cursor",
+    "status": "idea",
+    "constraints": [],
+    "budget": null,
+    "deadline": "",
+    "fabrication_plan": {
+      "project_name": "Camera Mouse",
+      "objective": "Hand gestures control macOS cursor",
+      "constraints": [],
+      "budget": null,
+      "deadline": "",
+      "phases": [
+        {
+          "name": "Plan",
+          "tasks": [
+            "Define requirements and acceptance criteria",
+            "Draft materials/BOM and sourcing list"
+          ]
+        },
+        {
+          "name": "Build",
+          "tasks": [
+            "Create fabrication setup checklist",
+            "Prototype first pass and capture issues"
+          ]
+        },
+        {
+          "name": "Debug",
+          "tasks": [
+            "Run debug + calibration cycle"
+          ]
+        },
+        {
+          "name": "Ship",
+          "tasks": [
+            "Finalize build notes and handoff checklist"
+          ]
+        }
+      ],
+      "risk_checks": [
+        "Power/thermal safety validated",
+        "Tooling and fixture alignment verified",
+        "Materials tolerances confirmed",
+        "Fallback plan for failed part or missed lead time"
+      ],
+      "next_actions": [
+        "Lock BOM and order long-lead parts",
+        "Schedule build block on calendar",
+        "Create test checklist before first fabrication run"
+      ]
+    },
+    "artifacts": [],
+    "notes": [
+      {
+        "timestamp": "2026-09-14T06:03:31.854061",
+        "text": "Need stable pinch gesture detector"
+      }
+    ],
+    "created_at": "2026-09-14T06:03:31.853486",
+    "updated_at": "2026-09-14T06:03:31.854146"
+  },
+  {
+    "id": "project-1789383907362",
+    "name": "Camera Mouse",
+    "objective": "Hand gestures control macOS cursor",
+    "status": "idea",
+    "constraints": [],
+    "budget": null,
+    "deadline": "",
+    "fabrication_plan": {
+      "project_name": "Camera Mouse",
+      "objective": "Hand gestures control macOS cursor",
+      "constraints": [],
+      "budget": null,
+      "deadline": "",
+      "phases": [
+        {
+          "name": "Plan",
+          "tasks": [
+            "Define requirements and acceptance criteria",
+            "Draft materials/BOM and sourcing list"
+          ]
+        },
+        {
+          "name": "Build",
+          "tasks": [
+            "Create fabrication setup checklist",
+            "Prototype first pass and capture issues"
+          ]
+        },
+        {
+          "name": "Debug",
+          "tasks": [
+            "Run debug + calibration cycle"
+          ]
+        },
+        {
+          "name": "Ship",
+          "tasks": [
+            "Finalize build notes and handoff checklist"
+          ]
+        }
+      ],
+      "risk_checks": [
+        "Power/thermal safety validated",
+        "Tooling and fixture alignment verified",
+        "Materials tolerances confirmed",
+        "Fallback plan for failed part or missed lead time"
+      ],
+      "next_actions": [
+        "Lock BOM and order long-lead parts",
+        "Schedule build block on calendar",
+        "Create test checklist before first fabrication run"
+      ]
+    },
+    "artifacts": [],
+    "notes": [
+      {
+        "timestamp": "2026-09-14T06:05:07.362893",
+        "text": "Need stable pinch gesture detector"
+      }
+    ],
+    "created_at": "2026-09-14T06:05:07.362150",
+    "updated_at": "2026-09-14T06:05:07.362974"
+  },
+  {
+    "id": "project-1789507347784",
+    "name": "Camera Mouse",
+    "objective": "Hand gestures control macOS cursor",
+    "status": "idea",
+    "constraints": [],
+    "budget": null,
+    "deadline": "",
+    "fabrication_plan": {
+      "project_name": "Camera Mouse",
+      "objective": "Hand gestures control macOS cursor",
+      "constraints": [],
+      "budget": null,
+      "deadline": "",
+      "phases": [
+        {
+          "name": "Plan",
+          "tasks": [
+            "Define requirements and acceptance criteria",
+            "Draft materials/BOM and sourcing list"
+          ]
+        },
+        {
+          "name": "Build",
+          "tasks": [
+            "Create fabrication setup checklist",
+            "Prototype first pass and capture issues"
+          ]
+        },
+        {
+          "name": "Debug",
+          "tasks": [
+            "Run debug + calibration cycle"
+          ]
+        },
+        {
+          "name": "Ship",
+          "tasks": [
+            "Finalize build notes and handoff checklist"
+          ]
+        }
+      ],
+      "risk_checks": [
+        "Power/thermal safety validated",
+        "Tooling and fixture alignment verified",
+        "Materials tolerances confirmed",
+        "Fallback plan for failed part or missed lead time"
+      ],
+      "next_actions": [
+        "Lock BOM and order long-lead parts",
+        "Schedule build block on calendar",
+        "Create test checklist before first fabrication run"
+      ]
+    },
+    "artifacts": [],
+    "notes": [
+      {
+        "timestamp": "2026-09-15T16:22:27.785535",
+        "text": "Need stable pinch gesture detector"
+      }
+    ],
+    "created_at": "2026-09-15T16:22:27.784641",
+    "updated_at": "2026-09-15T16:22:27.785619"
+  },
+  {
+    "id": "project-1789507387580",
+    "name": "Camera Mouse",
+    "objective": "Hand gestures control macOS cursor",
+    "status": "idea",
+    "constraints": [],
+    "budget": null,
+    "deadline": "",
+    "fabrication_plan": {
+      "project_name": "Camera Mouse",
+      "objective": "Hand gestures control macOS cursor",
+      "constraints": [],
+      "budget": null,
+      "deadline": "",
+      "phases": [
+        {
+          "name": "Plan",
+          "tasks": [
+            "Define requirements and acceptance criteria",
+            "Draft materials/BOM and sourcing list"
+          ]
+        },
+        {
+          "name": "Build",
+          "tasks": [
+            "Create fabrication setup checklist",
+            "Prototype first pass and capture issues"
+          ]
+        },
+        {
+          "name": "Debug",
+          "tasks": [
+            "Run debug + calibration cycle"
+          ]
+        },
+        {
+          "name": "Ship",
+          "tasks": [
+            "Finalize build notes and handoff checklist"
+          ]
+        }
+      ],
+      "risk_checks": [
+        "Power/thermal safety validated",
+        "Tooling and fixture alignment verified",
+        "Materials tolerances confirmed",
+        "Fallback plan for failed part or missed lead time"
+      ],
+      "next_actions": [
+        "Lock BOM and order long-lead parts",
+        "Schedule build block on calendar",
+        "Create test checklist before first fabrication run"
+      ]
+    },
+    "artifacts": [],
+    "notes": [
+      {
+        "timestamp": "2026-09-15T16:23:07.581079",
+        "text": "Need stable pinch gesture detector"
+      }
+    ],
+    "created_at": "2026-09-15T16:23:07.580406",
+    "updated_at": "2026-09-15T16:23:07.581156"
+  },
+  {
+    "id": "project-1789514149120",
+    "name": "Camera Mouse",
+    "objective": "Hand gestures control macOS cursor",
+    "status": "idea",
+    "constraints": [],
+    "budget": null,
+    "deadline": "",
+    "fabrication_plan": {
+      "project_name": "Camera Mouse",
+      "objective": "Hand gestures control macOS cursor",
+      "constraints": [],
+      "budget": null,
+      "deadline": "",
+      "phases": [
+        {
+          "name": "Plan",
+          "tasks": [
+            "Define requirements and acceptance criteria",
+            "Draft materials/BOM and sourcing list"
+          ]
+        },
+        {
+          "name": "Build",
+          "tasks": [
+            "Create fabrication setup checklist",
+            "Prototype first pass and capture issues"
+          ]
+        },
+        {
+          "name": "Debug",
+          "tasks": [
+            "Run debug + calibration cycle"
+          ]
+        },
+        {
+          "name": "Ship",
+          "tasks": [
+            "Finalize build notes and handoff checklist"
+          ]
+        }
+      ],
+      "risk_checks": [
+        "Power/thermal safety validated",
+        "Tooling and fixture alignment verified",
+        "Materials tolerances confirmed",
+        "Fallback plan for failed part or missed lead time"
+      ],
+      "next_actions": [
+        "Lock BOM and order long-lead parts",
+        "Schedule build block on calendar",
+        "Create test checklist before first fabrication run"
+      ]
+    },
+    "artifacts": [],
+    "notes": [
+      {
+        "timestamp": "2026-09-15T18:15:49.121322",
+        "text": "Need stable pinch gesture detector"
+      }
+    ],
+    "created_at": "2026-09-15T18:15:49.120285",
+    "updated_at": "2026-09-15T18:15:49.121422"
+  }
+]

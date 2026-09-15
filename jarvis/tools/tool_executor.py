@@ -48,6 +48,27 @@ class ToolExecutor:
         "ps", "top", "which", "echo", "cat", "head", "tail",
     }
 
+    # Broader allowlist for actual development work (building/testing code),
+    # separate from SAFE_COMMANDS above -- these can create/modify files on
+    # disk (that's the point), so they're gated by run_dev_command's dangerous-
+    # pattern blocklist rather than being fully read-only.
+    DEV_COMMANDS = SAFE_COMMANDS | {
+        "git", "python3", "python", "pip", "pip3", "pytest", "node", "npm",
+        "npx", "yarn", "pnpm", "mkdir", "touch", "mv", "cp", "grep", "find",
+        "wc", "diff", "chmod", "mkfile", "tsc", "eslint", "black", "ruff",
+        "mypy", "pyright", "cargo", "go", "make", "cmake", "swift", "swiftc",
+    }
+
+    # Substrings that veto a dev command outright regardless of which binary
+    # is invoked first -- covers the destructive/irreversible cases (wiping
+    # disks, piping remote scripts into a shell, disabling permissions, etc.)
+    DANGEROUS_PATTERNS = (
+        "rm -rf /", "rm -rf ~", "rm -rf *", ":(){ :|:& };:", "mkfs", "dd if=",
+        "sudo ", "> /dev/", "chmod -r 777", "chmod 777 -r", "curl | sh",
+        "curl | bash", "wget | sh", "wget | bash", "| sh", "| bash",
+        "git push --force", "git push -f", "--force-with-lease",
+    )
+
     def parse_tool_call(self, text: str) -> Optional[ToolCall]:
         try:
             match = re.search(r'\{[^}]*"action"[^}]*\}', text)
@@ -68,11 +89,12 @@ class ToolExecutor:
             "read_screen": self._read_screen,
             "run_shell": lambda: self._run_shell_command(call.params["command"]),
             "web_search": lambda: self._web_search(call.params["query"]),
-            "web_search_and_open": lambda: self._web_search_and_open(call.params["query"]),
+            "web_search_and_open": lambda: self._web_search_and_open(call.params["query"], call.params.get("new_tab", True)),
             "open_and_type": lambda: self._open_and_type(call.params["app"], call.params["text"]),
             "click_element": lambda: self._click_element(call.params["target"]),
             "type_in_field": lambda: self._type_in_field(call.params["text"], call.params["field"]),
             "scroll": lambda: self._scroll(call.params["direction"]),
+            "switch_tab": lambda: self._switch_tab(call.params.get("direction", "next")),
         }
 
         handler = handlers.get(call.action)
@@ -96,7 +118,7 @@ class ToolExecutor:
             return ToolResult(False, "Invalid app name provided", "open_app", "Empty or invalid app name")
 
         common = {
-            "browser": "Safari", "chrome": "Google Chrome", "firefox": "Firefox",
+            "browser": "Google Chrome", "chrome": "Google Chrome", "firefox": "Firefox",
             "safari": "Safari", "terminal": "Terminal", "finder": "Finder",
             "vscode": "Visual Studio Code", "code": "Visual Studio Code",
             "cursor": "Cursor", "notes": "Notes", "calculator": "Calculator", "mail": "Mail",
@@ -182,37 +204,54 @@ class ToolExecutor:
         output = "\n".join([f"Active app: {active_app.strip()}", f"Window: {window_title.strip()}", "", vision_description])
         return ToolResult(True, output, "read_screen")
 
-    async def _describe_screenshot(self, path: str, prompt: str) -> str:
-        api_key = os.environ.get("OPENAI_API_KEY")
+    async def _claude_vision(self, image_b64: str, prompt: str, model: str, max_tokens: int = 500) -> Optional[str]:
+        """Raw HTTP call to Anthropic's Messages API with an image block --
+        vision runs on the same ANTHROPIC_API_KEY as everything else in
+        JARVIS now, no separate OpenAI key to configure. Returns None on
+        failure so callers can give a specific error message."""
+        api_key = os.environ.get("ANTHROPIC_API_KEY")
         if not api_key:
-            return "OpenAI API key not configured - set OPENAI_API_KEY environment variable to enable AI vision"
-
-        with open(path, "rb") as f:
-            b64 = base64.b64encode(f.read()).decode()
+            return None
 
         try:
             async with httpx.AsyncClient(timeout=30) as client:
                 response = await client.post(
-                    "https://api.openai.com/v1/chat/completions",
-                    headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                    "https://api.anthropic.com/v1/messages",
+                    headers={
+                        "x-api-key": api_key,
+                        "anthropic-version": "2023-06-01",
+                        "content-type": "application/json",
+                    },
                     json={
-                        "model": "gpt-4o",
+                        "model": model,
+                        "max_tokens": max_tokens,
                         "messages": [{
                             "role": "user",
                             "content": [
+                                {"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": image_b64}},
                                 {"type": "text", "text": prompt},
-                                {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{b64}", "detail": "high"}},
                             ],
                         }],
-                        "max_tokens": 500,
                     },
                 )
             if response.status_code == 200:
-                return response.json()["choices"][0]["message"]["content"]
-            raise RuntimeError(f"OpenAI API error: {response.status_code}")
+                content = response.json().get("content", [])
+                return "".join(block.get("text", "") for block in content if block.get("type") == "text")
+            raise RuntimeError(f"Claude vision API error: {response.status_code} {response.text}")
         except Exception as error:  # noqa: BLE001
-            logger.error("OpenAI Vision API failed:", error)
-            return "AI Vision analysis failed - please check your OpenAI API key and connection"
+            logger.error("Claude vision API failed:", error)
+            return None
+
+    async def _describe_screenshot(self, path: str, prompt: str) -> str:
+        with open(path, "rb") as f:
+            b64 = base64.b64encode(f.read()).decode()
+
+        result = await self._claude_vision(b64, prompt, model="claude-haiku-4-5", max_tokens=500)
+        if result is None:
+            if not os.environ.get("ANTHROPIC_API_KEY"):
+                return "ANTHROPIC_API_KEY not configured -- vision unavailable"
+            return "Vision analysis failed - check logs for details"
+        return result
 
     async def _run_shell_command(self, command: str) -> ToolResult:
         base_command = command.strip().split(" ")[0]
@@ -224,6 +263,52 @@ class ToolExecutor:
         except Exception as error:  # noqa: BLE001
             return ToolResult(False, f"Shell command failed: {command}", "run_shell", str(error))
 
+    async def run_dev_command(self, command: str, cwd: str, timeout_s: float = 120.0) -> ToolResult:
+        """Run a real development command (git/python/pip/npm/pytest/...)
+        scoped to a working directory (the JARVIS workspace root, or a
+        project subfolder within it), with a dangerous-pattern blocklist and
+        hard timeout. This is what lets JARVIS actually build/test code
+        rather than only describing what to run."""
+        stripped = command.strip()
+        base_command = stripped.split(" ")[0] if stripped else ""
+
+        if base_command not in self.DEV_COMMANDS:
+            return ToolResult(
+                False, f"Command '{base_command}' is not in the dev commands allowlist", "run_dev_command",
+                "Command not allowed -- see ToolExecutor.DEV_COMMANDS",
+            )
+
+        lowered = stripped.lower()
+        for pattern in self.DANGEROUS_PATTERNS:
+            if pattern in lowered:
+                return ToolResult(
+                    False, "Command blocked by safety pattern", "run_dev_command",
+                    f"Matched dangerous pattern: {pattern!r}",
+                )
+
+        try:
+            proc = await asyncio.create_subprocess_shell(
+                stripped, cwd=cwd,
+                stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE,
+            )
+            try:
+                stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=timeout_s)
+            except asyncio.TimeoutError:
+                proc.kill()
+                return ToolResult(False, f"Command timed out after {timeout_s}s: {stripped}", "run_dev_command", "Timeout")
+
+            out = stdout.decode(errors="replace")
+            err = stderr.decode(errors="replace")
+            combined = (out + ("\n" + err if err else "")).strip()
+            # Cap output so a runaway build log doesn't blow the context window.
+            if len(combined) > 20000:
+                combined = combined[:20000] + "\n...[truncated]"
+
+            success = proc.returncode == 0
+            return ToolResult(success, combined or ("Command exited 0 with no output" if success else "Command failed with no output"), "run_dev_command", None if success else f"Exit code {proc.returncode}")
+        except Exception as error:  # noqa: BLE001
+            return ToolResult(False, f"Dev command failed: {stripped}", "run_dev_command", str(error))
+
     async def _web_search(self, query: str) -> ToolResult:
         url = f"https://www.google.com/search?q={query}"
         try:
@@ -232,18 +317,27 @@ class ToolExecutor:
         except Exception as error:  # noqa: BLE001
             return ToolResult(False, "Failed to perform web search", "web_search", str(error))
 
-    async def _web_search_and_open(self, query: str) -> ToolResult:
-        opened = await self._open_app("Safari")
+    async def _web_search_and_open(self, query: str, new_tab: bool = True) -> ToolResult:
+        opened = await self._open_app("Google Chrome")
         if not opened.success:
             return opened
-        await asyncio.sleep(2)
-        await self._press_keys(["cmd", "l"])
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(1.5)
+        if new_tab:
+            # A fresh tab already focuses its own address bar in Chrome, so
+            # no separate cmd+L needed here.
+            await self._press_keys(["cmd", "t"])
+            await asyncio.sleep(0.4)
+        else:
+            # Reuse whatever tab is already frontmost -- refocus its address
+            # bar rather than opening another one.
+            await self._press_keys(["cmd", "l"])
+            await asyncio.sleep(0.3)
         url = f"https://www.google.com/search?q={query}"
         await self._type_text(url)
         await asyncio.sleep(0.5)
         await self._press_keys(["return"])
-        return ToolResult(True, f'Opened Safari and searched for: "{query}"', "web_search_and_open")
+        tab_desc = "a new tab" if new_tab else "the current tab"
+        return ToolResult(True, f'Searched in {tab_desc} for: "{query}"', "web_search_and_open")
 
     async def _open_and_type(self, app_name: str, text: str) -> ToolResult:
         opened = await self._open_app(app_name)
@@ -257,28 +351,17 @@ class ToolExecutor:
         screenshot_path = f"/tmp/jarvis_click_{int(time.time() * 1000)}.png"
         try:
             await _run(f'screencapture -x "{screenshot_path}"')
-            api_key = os.environ.get("OPENAI_API_KEY")
-            if api_key:
+            if os.environ.get("ANTHROPIC_API_KEY"):
                 with open(screenshot_path, "rb") as f:
                     b64 = base64.b64encode(f.read()).decode()
-                async with httpx.AsyncClient(timeout=30) as client:
-                    response = await client.post(
-                        "https://api.openai.com/v1/chat/completions",
-                        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-                        json={
-                            "model": "gpt-4o",
-                            "messages": [{
-                                "role": "user",
-                                "content": [
-                                    {"type": "text", "text": f'Find the "{target}" element on this screen. Respond with ONLY the coordinates in this exact format: {{"x": 123, "y": 456}}. If you can\'t find it, respond with {{"error": "not found"}}.'},
-                                    {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{b64}", "detail": "high"}},
-                                ],
-                            }],
-                            "max_tokens": 100,
-                        },
-                    )
-                if response.status_code == 200:
-                    content = response.json()["choices"][0]["message"]["content"]
+                content = await self._claude_vision(
+                    b64,
+                    f'Find the "{target}" element on this screen. Respond with ONLY the coordinates in this '
+                    'exact format: {"x": 123, "y": 456}. If you can\'t find it, respond with {"error": "not found"}.',
+                    model="claude-sonnet-5",
+                    max_tokens=100,
+                )
+                if content:
                     try:
                         coords = json.loads(content)
                         if "error" not in coords:
@@ -329,6 +412,17 @@ class ToolExecutor:
         await asyncio.sleep(0.5)
         typed = await self._type_text(text)
         return ToolResult(typed.success, f'Typed "{text}" in field "{field_name}"', "type_in_field")
+
+    async def _switch_tab(self, direction: str) -> ToolResult:
+        # cmd+shift+] / cmd+shift+[ cycles tabs forward/back in Safari, Chrome,
+        # and most other tabbed macOS apps -- no per-browser branching needed.
+        key = "]" if direction == "next" else "["
+        script = f'tell application "System Events" to keystroke "{key}" using {{command down, shift down}}'
+        try:
+            await _run(f"osascript -e '{script}'")
+            return ToolResult(True, f"Switched to {direction} tab", "switch_tab")
+        except Exception as error:  # noqa: BLE001
+            return ToolResult(False, f"Failed to switch to {direction} tab", "switch_tab", str(error))
 
     async def _scroll(self, direction: str) -> ToolResult:
         amount = "-10" if direction == "up" else "10"

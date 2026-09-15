@@ -95,6 +95,34 @@ class AsrWhisper:
 
         return AsrResult(text, 0.8, result.get("language", self.config.language), duration, time.time() * 1000)
 
+    def transcribe_long_form(self, audio_data: np.ndarray, sample_rate: int = 16000) -> AsrResult:
+        """For lecture/meeting-length audio -- unlike transcribe() (built for
+        short voice commands and capped at Whisper's 30s window via
+        pad_or_trim), this skips that trim and lets Whisper's own
+        sliding-window transcription run across the entire recording."""
+        if self._model is None:
+            raise RuntimeError("Whisper not initialized")
+        if len(audio_data) == 0:
+            raise ValueError("Empty audio data")
+
+        start = time.perf_counter()
+        audio_f32 = audio_data.astype(np.float32)
+        peak = np.max(np.abs(audio_f32))
+        if peak > 0:
+            audio_f32 = audio_f32 / peak
+
+        result = self._model.transcribe(
+            audio_f32,
+            language=self.config.language,
+            fp16=False,
+            condition_on_previous_text=True,
+        )
+
+        duration = (time.perf_counter() - start) * 1000
+        text = result["text"].strip()
+        logger.debug(f"Long-form transcription completed in {duration:.1f}ms ({len(text)} chars)")
+        return AsrResult(text, 0.8, result.get("language", self.config.language), duration, time.time() * 1000)
+
     def _audio_level(self, audio_data: np.ndarray) -> float:
         return float(np.mean(np.abs(audio_data)))
 
