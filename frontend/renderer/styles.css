@@ -347,12 +347,6 @@ body {
   color: var(--text-primary);
 }
 
-.fitness-webview {
-  flex: 1;
-  width: 100%;
-  border: none;
-}
-
 .notes-body {
   flex: 1;
   overflow-y: auto;

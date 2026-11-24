@@ -125,43 +125,6 @@ async function refreshWeather() {
   }
 }
 
-// ---------- Fitness widget ----------
-async function refreshFitness() {
-  if (!window.jarvis) return;
-  const body = $('fitness-body');
-  try {
-    const summary = await window.jarvis.getFitnessSummary();
-    if (!summary.online) {
-      body.innerHTML = '<div class="weather-empty">Fitness tracker offline -- run <code>fitness.sh</code></div>';
-      return;
-    }
-    body.innerHTML = `
-      <div class="stat-grid two">
-        <div class="stat-tile"><span class="label">HRV</span><span class="value">${summary.hrv ?? '--'}</span></div>
-        <div class="stat-tile"><span class="label">Sleep Score</span><span class="value">${summary.sleepScore ?? '--'}</span></div>
-        <div class="stat-tile"><span class="label">Resting HR</span><span class="value">${summary.restingHr ?? '--'}</span></div>
-        <div class="stat-tile"><span class="label">Stress</span><span class="value">${summary.stressScore ?? '--'}</span></div>
-      </div>`;
-  } catch (err) {
-    body.innerHTML = '<div class="weather-empty">Fitness tracker offline -- run <code>fitness.sh</code></div>';
-  }
-}
-
-async function openFitnessDashboard() {
-  if (!window.jarvis) return;
-  const overlay = $('fitness-overlay');
-  const webview = $('fitness-webview');
-  const url = await window.jarvis.getFitnessFrontendUrl();
-  if (webview.getAttribute('src') !== url) {
-    webview.setAttribute('src', url);
-  }
-  overlay.hidden = false;
-}
-
-function closeFitnessDashboard() {
-  $('fitness-overlay').hidden = true;
-}
-
 // ---------- R&D Project workspace ----------
 async function refreshProjectsWidget() {
   const body = $('projects-widget-body');
@@ -559,13 +522,11 @@ function init() {
 
   refreshSystemStats();
   refreshWeather();
-  refreshFitness();
   refreshProjectsWidget();
   pollBackendHealth();
 
   setInterval(refreshSystemStats, 3000);
   setInterval(refreshWeather, 5 * 60 * 1000);
-  setInterval(refreshFitness, 60 * 1000);
   setInterval(refreshProjectsWidget, 60 * 1000);
   setInterval(pollBackendHealth, 10000);
 
@@ -587,14 +548,7 @@ function init() {
   $('refresh-stats').addEventListener('click', refreshSystemStats);
   $('refresh-weather').addEventListener('click', refreshWeather);
 
-  $('refresh-fitness').addEventListener('click', (e) => {
-    e.stopPropagation();
-    refreshFitness();
-  });
-  $('fitness-widget').addEventListener('click', openFitnessDashboard);
-  $('fitness-overlay-close').addEventListener('click', closeFitnessDashboard);
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !$('fitness-overlay').hidden) closeFitnessDashboard();
     if (e.key === 'Escape' && !$('projects-overlay').hidden) closeProjectsWorkspace();
     if (e.key === 'Escape' && !$('notes-overlay').hidden) closeNotesOverlay();
   });

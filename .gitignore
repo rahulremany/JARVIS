@@ -68,12 +68,3 @@ node_modules/
 # AI Models (large files - download separately)
 models/
 *.gguf
-
-# Fitness service (Volt) - only actual credentials/venv excluded; workout
-# history, recovery data, and coach memory are personal data, not secrets,
-# and are tracked.
-jarvis/services/fitness/.venv/
-jarvis/services/fitness/.env
-jarvis/services/fitness/.garmin_tokens/
-frontend/fitness/.env
-frontend/fitness/dist/

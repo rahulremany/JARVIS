@@ -4,8 +4,6 @@ contextBridge.exposeInMainWorld('jarvis', {
   getSystemStats: () => ipcRenderer.invoke('jarvis:get-system-stats'),
   getWeather: () => ipcRenderer.invoke('jarvis:get-weather'),
   getBackendUrl: () => ipcRenderer.invoke('jarvis:get-backend-url'),
-  getFitnessSummary: () => ipcRenderer.invoke('jarvis:get-fitness-summary'),
-  getFitnessFrontendUrl: () => ipcRenderer.invoke('jarvis:get-fitness-frontend-url'),
   noteCommand: () => ipcRenderer.invoke('jarvis:note-command'),
   saveTextFile: (text, opts) => ipcRenderer.invoke('jarvis:save-text-file', text, opts),
   // Pushed from main.js when the backend's real voice loop starts/stops

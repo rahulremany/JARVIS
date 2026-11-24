@@ -85,16 +85,6 @@ def test_fabrication_plan_shape(tmp_path: Path):
     assert len(plan["risk_checks"]) > 0
 
 
-def test_fitness_log_and_summary(tmp_path: Path):
-    service = _service(tmp_path)
-    service.add_fitness_entry({"hr": 62, "sleep_hours": 7.5})
-    service.add_fitness_entry({"hr": 66, "sleep_hours": 6.5})
-
-    summary = service.fitness_summary(days=7)
-    assert summary["count"] >= 2
-    assert "hr" in summary["averages"]
-
-
 def test_create_project_generates_fabrication_plan(tmp_path: Path):
     service = _service(tmp_path)
     project = service.create_project(
