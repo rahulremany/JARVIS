@@ -34,18 +34,18 @@ async def test_handle_text_input_remembers_prior_turns():
     session_manager = SessionManager()
     handler = ConversationHandler(config=ConversationConfig(enable_tts=False), session_manager=session_manager)
 
-    engine = _FakeEngine("Nice to meet you, Rahul.")
-    await handler.handle_text_input("my name is Rahul", engine, session_id="s1")
+    engine = _FakeEngine("Nice to meet you, Ada.")
+    await handler.handle_text_input("my name is Ada", engine, session_id="s1")
 
-    engine2 = _FakeEngine("Your name is Rahul.")
+    engine2 = _FakeEngine("Your name is Ada.")
     await handler.handle_text_input("what did I just tell you my name was", engine2, session_id="s1")
 
     # The second call's request must include the first turn's user+assistant
     # messages, not just the new question on its own -- that's the whole bug.
     second_call_messages = engine2.seen_messages[0]
     contents = [m["content"] for m in second_call_messages]
-    assert any("my name is Rahul" in c for c in contents)
-    assert any("Nice to meet you, Rahul" in c for c in contents)
+    assert any("my name is Ada" in c for c in contents)
+    assert any("Nice to meet you, Ada" in c for c in contents)
     assert contents[-1] == "what did I just tell you my name was"
 
 

@@ -58,7 +58,7 @@ class EngineSelector:
         tool_policy = (
             "\nTooling Policy:\n"
             "- When user asks to create/scaffold a new project, call create_desktop_project by default.\n"
-            "- Default project location is the Desktop root configured by JARVIS_PROJECTS_ROOT.\n"
+            "- Default project location is the projects root configured by JARVIS_PROJECTS_ROOT.\n"
             "- Only use workspace file-edit tools for changes inside this JARVIS repository unless user asks otherwise.\n"
         )
         return SYSTEM_PROMPT + profile_context + intent_context + tool_policy

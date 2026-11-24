@@ -47,7 +47,7 @@ async def test_generate_stream_with_tools_executes_tool_and_returns_text():
 
     async def runner(name, payload):
         tool_calls.append((name, payload))
-        return {"name": "Rahul"}
+        return {"name": "Ada"}
 
     params = GenerationParams(max_tokens=64, temperature=0.2)
     messages = [{"role": "user", "content": "who am i?"}]

@@ -42,14 +42,14 @@ async def test_agent_tools_profile_roundtrip(tmp_path: Path, monkeypatch):
     registry = AgentToolRegistry()
 
     await registry.invoke("profile_update", {
-        "name": "Rahul",
+        "name": "Ada",
         "preferred_tone": "direct",
-        "goals": ["build camera mouse"],
+        "goals": ["build weather station"],
     })
 
     profile = await registry.invoke("profile_get", {})
-    assert profile["name"] == "Rahul"
-    assert profile["goals"] == ["build camera mouse"]
+    assert profile["name"] == "Ada"
+    assert profile["goals"] == ["build weather station"]
 
 
 @pytest.mark.asyncio
@@ -58,7 +58,7 @@ async def test_agent_tools_project_create_and_note(tmp_path: Path, monkeypatch):
     registry = AgentToolRegistry()
 
     project = await registry.invoke("project_create", {
-        "name": "Camera Mouse",
+        "name": "Weather Station",
         "objective": "Hand gestures control macOS cursor",
     })
 
