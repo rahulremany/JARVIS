@@ -32,8 +32,7 @@ from .utils.env import load_env  # noqa: E402
 from .utils.logging import logger  # noqa: E402
 
 # Same state directory the MCP server (jarvis/mcp/server.py) writes to, so the
-# native fitness panel in the Electron UI and any MCP-driven fitness_* tool
-# calls both read/write the same underlying JSON store.
+# Electron UI and MCP-driven tool calls read/write the same JSON store.
 WORKSPACE_ROOT = Path(os.environ.get("JARVIS_WORKSPACE_ROOT", Path.cwd())).resolve()
 life_os = LifeOSService(state_dir=WORKSPACE_ROOT / ".jarvis_state")
 profile_store = UserProfileStore(state_dir=WORKSPACE_ROOT / ".jarvis_state")
@@ -270,24 +269,6 @@ async def chat_clear(request: Request):
     session_id = body.get("session_id", "default")
     session_manager.reset(session_id)
     return {"message": "Session cleared", "session_id": session_id}
-
-
-@app.get("/fitness/summary")
-async def fitness_summary(days: int = 7):
-    return life_os.fitness_summary(days=days)
-
-
-@app.get("/fitness/history")
-async def fitness_history(limit: int = 20):
-    return {"entries": life_os.fitness_history(limit=limit)}
-
-
-@app.post("/fitness/log")
-async def fitness_log(request: Request):
-    body = await request.json()
-    metrics = body.get("metrics", {})
-    source = body.get("source", "panel")
-    return life_os.add_fitness_entry(metrics=metrics, source=source)
 
 
 @app.get("/projects")

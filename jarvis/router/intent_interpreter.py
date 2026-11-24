@@ -48,8 +48,6 @@ class IntentInterpreter:
             return "software_engineering"
         if any(token in text for token in ("calendar", "email", "canvas", "schedule", "plan")):
             return "planning_organization"
-        if any(token in text for token in ("fitness", "workout", "recovery", "hrv")):
-            return "fitness"
         if any(token in text for token in ("fabricat", "cad", "circuit", "prototype", "monitor")):
             return "rd_fabrication"
         return "general"
@@ -61,8 +59,6 @@ class IntentInterpreter:
             tools.extend(["search_workspace", "read_workspace_file", "edit_workspace_file", "run_dev_command", "code_review_file"])
         if domain == "planning_organization":
             tools.extend(["planner_add_item", "planner_daily_brief", "calendar_list_events", "email_scan_inbox", "canvas_estimate_workload"])
-        if domain == "fitness":
-            tools.extend(["fitness_summary", "fitness_history"])
         if domain == "rd_fabrication":
             tools.extend(["project_create", "project_add_artifact", "project_add_note", "fabrication_project_plan"])
 

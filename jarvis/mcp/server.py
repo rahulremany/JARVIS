@@ -20,7 +20,6 @@ from mcp.server.fastmcp import FastMCP
 
 from ..tools.canvas_adapter import CanvasAdapter
 from ..tools.daily_briefing import DailyBriefingService
-from ..tools.fitness_adapter import FitnessAdapter
 from ..tools.google_adapter import GoogleAdapter
 from ..tools.life_os import LifeOSService
 from ..tools.reminders_adapter import RemindersAdapter
@@ -41,7 +40,6 @@ _life_os = LifeOSService(state_dir=WORKSPACE_ROOT / ".jarvis_state")
 _profile_store = UserProfileStore(state_dir=WORKSPACE_ROOT / ".jarvis_state")
 _google = GoogleAdapter()
 _canvas = CanvasAdapter()
-_fitness = FitnessAdapter()
 _reminders = RemindersAdapter()
 _daily_briefing = DailyBriefingService(canvas=_canvas, google=_google, reminders=_reminders, life_os=_life_os)
 
@@ -478,25 +476,6 @@ async def planner_estimate_canvas_workload(assignments: list[dict[str, Any]]) ->
     return _life_os.estimate_canvas_workload(assignments)
 
 
-@mcp.tool()
-async def fitness_log_metrics(metrics: dict[str, float], source: str = "dashboard") -> dict[str, Any]:
-    """Store a biometrics snapshot from your fitness dashboard."""
-    return _life_os.add_fitness_entry(metrics=metrics, source=source)
-
-
-@mcp.tool()
-async def fitness_summary(days: int = 7) -> dict[str, Any]:
-    """Summarize recent biometrics averages and latest reading."""
-    return _life_os.fitness_summary(days=days)
-
-
-@mcp.tool()
-async def fitness_history(limit: int = 50) -> dict[str, Any]:
-    """List recent biometrics entries, most recent first -- for the native
-    JARVIS fitness panel's history view/chart."""
-    return {"entries": _life_os.fitness_history(limit=limit)}
-
-
 # ---------------- R&D project workspace ----------------
 # A project bundles a fabrication plan with every artifact produced while
 # building it (CAD files, circuit netlists, sim results, links) plus a notes
@@ -721,52 +700,6 @@ async def homework_help() -> str:
     if not result.success:
         raise RuntimeError(result.error or result.output)
     return result.output
-
-
-@mcp.tool()
-async def fitness_latest_recovery() -> dict[str, Any]:
-    """Latest Garmin recovery snapshot from Volt (HRV, sleep score, resting HR, stress).
-    Requires ./fitness.sh running -- see jarvis/services/fitness."""
-    return await _fitness.latest_recovery()
-
-
-@mcp.tool()
-async def fitness_recovery_history(limit: int = 14) -> dict[str, Any]:
-    """Recent Garmin recovery history from Volt, most recent last."""
-    return await _fitness.recovery_history(limit=limit)
-
-
-@mcp.tool()
-async def fitness_list_workouts(limit: int = 14) -> dict[str, Any]:
-    """Recent logged strength-training sessions from Volt (exercise, sets, reps, weight)."""
-    return await _fitness.list_workouts(limit=limit)
-
-
-@mcp.tool()
-async def fitness_todays_workout() -> dict[str, Any]:
-    """Volt's AI coach recommendation for today's workout, reasoned from recent
-    training load and current recovery."""
-    return await _fitness.todays_workout()
-
-
-@mcp.tool()
-async def fitness_save_workout_to_garmin(name: str, exercises: list[dict[str, Any]]) -> dict[str, Any]:
-    """Push a workout to the user's Garmin Connect workout library so it's selectable
-    on their watch. exercises: [{name, sets, reps, target_weight?, notes?}, ...]."""
-    return await _fitness.save_workout_to_garmin(name=name, exercises=exercises)
-
-
-@mcp.tool()
-async def fitness_coach_chat(message: str) -> dict[str, Any]:
-    """Ask Volt's coach a training question -- it has direct access to the user's
-    training history, recovery data, and persistent memory of injuries/goals/equipment."""
-    return await _fitness.coach_chat(message=message)
-
-
-@mcp.tool()
-async def fitness_nutrition_logs(limit: int = 14) -> dict[str, Any]:
-    """Recent nutrition logs (calories/macros) synced from Cronometer via Volt."""
-    return await _fitness.nutrition_logs(limit=limit)
 
 
 def run() -> None:

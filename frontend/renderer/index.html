@@ -62,17 +62,6 @@
         </div>
       </section>
 
-      <section class="card card-clickable fx-interactive holo-in" id="fitness-widget" title="Open Fitness dashboard">
-        <div class="card-header">
-          <h2>💓 Fitness</h2>
-          <button class="icon-btn small" id="refresh-fitness" title="Refresh">⟳</button>
-        </div>
-        <div id="fitness-body">
-          <div class="weather-empty">Fitness tracker offline -- run <code>fitness.sh</code></div>
-        </div>
-        <p class="hint">Tap to open full dashboard</p>
-      </section>
-
     </aside>
 
     <!-- Center column -->
@@ -142,14 +131,6 @@
       </section>
     </aside>
   </main>
-
-  <div class="fitness-overlay holo-in" id="fitness-overlay" hidden>
-    <div class="fitness-overlay-bar">
-      <span class="fitness-overlay-title">💓 Fitness Dashboard</span>
-      <button class="icon-btn" id="fitness-overlay-close" title="Close (Esc)">✕</button>
-    </div>
-    <webview id="fitness-webview" class="fitness-webview"></webview>
-  </div>
 
   <div class="fitness-overlay holo-in" id="projects-overlay" hidden>
     <div class="fitness-overlay-bar">

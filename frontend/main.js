@@ -11,8 +11,6 @@ const REPO_ROOT = path.join(__dirname, '..');
 const BACKEND_URL = process.env.BACKEND_URL || 'http://127.0.0.1:3000';
 const WEATHER_API_KEY = process.env.WEATHER_API_KEY || '';
 const WEATHER_CITY = process.env.WEATHER_CITY || 'Quezon City,PH';
-const FITNESS_BACKEND_URL = process.env.FITNESS_BACKEND_URL || 'http://127.0.0.1:8000';
-const FITNESS_FRONTEND_URL = process.env.FITNESS_FRONTEND_URL || 'http://127.0.0.1:5173';
 // Matches wake_system_integrated.py's self.wake_notify_url -- the voice
 // pipeline POSTs here the instant the wake word fires so this window jumps
 // to the front immediately, before the mic even finishes recording the command.
@@ -168,7 +166,6 @@ function createWindow() {
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: false,
-      webviewTag: true,
     },
   });
 
@@ -273,28 +270,6 @@ ipcMain.handle('jarvis:get-weather', async () => {
 });
 
 ipcMain.handle('jarvis:get-backend-url', () => BACKEND_URL);
-
-ipcMain.handle('jarvis:get-fitness-frontend-url', () => FITNESS_FRONTEND_URL);
-
-ipcMain.handle('jarvis:get-fitness-summary', async () => {
-  try {
-    const response = await fetch(`${FITNESS_BACKEND_URL}/garmin-recovery/latest`);
-    if (!response.ok) {
-      return { online: false };
-    }
-    const data = await response.json();
-    return {
-      online: true,
-      date: data.date,
-      hrv: data.hrv,
-      sleepScore: data.sleep_score,
-      stressScore: data.stress_score,
-      restingHr: data.resting_hr,
-    };
-  } catch (error) {
-    return { online: false };
-  }
-});
 
 ipcMain.handle('jarvis:note-command', () => {
   sessionCommandCount += 1;

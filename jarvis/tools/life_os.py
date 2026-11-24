@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Literal, Optional
 
@@ -21,13 +21,6 @@ class PlannerTask:
     source: str = "manual"
     tags: list[str] = field(default_factory=list)
     created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
-
-
-@dataclass
-class FitnessEntry:
-    timestamp: str
-    source: str
-    metrics: dict[str, float]
 
 
 ProjectStatus = Literal["idea", "planning", "building", "testing", "done", "archived"]
@@ -71,7 +64,6 @@ class LifeOSService:
         self.state_dir = state_dir
         self.state_dir.mkdir(parents=True, exist_ok=True)
         self.tasks_path = self.state_dir / "planner_tasks.json"
-        self.fitness_path = self.state_dir / "fitness_metrics.json"
         self.projects_path = self.state_dir / "research_projects.json"
         self.canvas_synced_path = self.state_dir / "canvas_synced.json"
 
@@ -91,12 +83,6 @@ class LifeOSService:
 
     def _save_tasks(self, tasks: list[dict[str, Any]]) -> None:
         self._save_json(self.tasks_path, tasks)
-
-    def _load_fitness(self) -> list[dict[str, Any]]:
-        return self._load_json(self.fitness_path, [])
-
-    def _save_fitness(self, entries: list[dict[str, Any]]) -> None:
-        self._save_json(self.fitness_path, entries)
 
     def _load_projects(self) -> list[dict[str, Any]]:
         return self._load_json(self.projects_path, [])
@@ -250,60 +236,6 @@ class LifeOSService:
                 "Schedule build block on calendar",
                 "Create test checklist before first fabrication run",
             ],
-        }
-
-    def add_fitness_entry(self, metrics: dict[str, float], source: str = "dashboard") -> dict[str, Any]:
-        normalized = {k: float(v) for k, v in metrics.items()}
-        entry = FitnessEntry(
-            timestamp=datetime.utcnow().isoformat(),
-            source=source,
-            metrics=normalized,
-        )
-        entries = self._load_fitness()
-        entries.append(asdict(entry))
-        self._save_fitness(entries)
-        return asdict(entry)
-
-    def fitness_history(self, limit: int = 50) -> list[dict[str, Any]]:
-        entries = self._load_fitness()
-        entries.sort(key=lambda entry: entry.get("timestamp", ""))
-        if limit > 0:
-            entries = entries[-limit:]
-        return list(reversed(entries))
-
-    def fitness_summary(self, days: int = 7) -> dict[str, Any]:
-        entries = self._load_fitness()
-        if not entries:
-            return {"days": days, "count": 0, "averages": {}, "latest": None}
-
-        cutoff = datetime.utcnow() - timedelta(days=max(1, days))
-        recent = []
-        for entry in entries:
-            timestamp = entry.get("timestamp")
-            try:
-                dt = datetime.fromisoformat(timestamp)
-            except Exception:
-                continue
-            if dt >= cutoff:
-                recent.append(entry)
-
-        if not recent:
-            return {"days": days, "count": 0, "averages": {}, "latest": entries[-1]}
-
-        sums: dict[str, float] = {}
-        counts: dict[str, int] = {}
-        for entry in recent:
-            metrics = entry.get("metrics", {})
-            for key, value in metrics.items():
-                sums[key] = sums.get(key, 0.0) + float(value)
-                counts[key] = counts.get(key, 0) + 1
-
-        averages = {key: round(sums[key] / counts[key], 3) for key in sums}
-        return {
-            "days": days,
-            "count": len(recent),
-            "averages": averages,
-            "latest": recent[-1],
         }
 
     # ---------------- R&D project workspace ----------------

@@ -25,9 +25,8 @@ instant you say "Jarvis."
   transcription (OpenAI's open-source Whisper model) both run on-device —
   no cloud STT dependency, no per-request transcription cost.
 - **Real integrations, not stubs**: Google Calendar (OAuth2, direct REST),
-  Canvas LMS (assignments + grades), Apple Reminders (AppleScript), and a
-  companion fitness tracker service — all exposed as tools the agent can
-  actually call.
+  Canvas LMS (assignments + grades), and Apple Reminders (AppleScript) —
+  all exposed as tools the agent can actually call.
 - **Batch-transcribe-and-reformat lecture notes**: record a class or
   meeting with no length cap, then one Whisper pass + one Claude call turns
   the raw transcript into organized, exam-ready study notes.
