@@ -40,7 +40,7 @@ class AgentToolRegistry:
             canvas=self.canvas, google=self.google, reminders=self.reminders, life_os=self.life_os,
         )
 
-        projects_root = os.environ.get("JARVIS_PROJECTS_ROOT", str(Path.home() / "Desktop"))
+        projects_root = os.environ.get("JARVIS_PROJECTS_ROOT", str(Path.home() / "Projects"))
         self.projects_root = Path(projects_root).expanduser().resolve()
         self.projects_root.mkdir(parents=True, exist_ok=True)
 
@@ -170,7 +170,7 @@ class AgentToolRegistry:
             },
             {
                 "name": "create_desktop_project",
-                "description": "Scaffold a basic runnable project on Desktop by default.",
+                "description": "Scaffold a basic runnable project under the projects root (JARVIS_PROJECTS_ROOT).",
                 "input_schema": {
                     "type": "object",
                     "properties": {
@@ -183,7 +183,7 @@ class AgentToolRegistry:
                         },
                         "target_dir": {
                             "type": "string",
-                            "description": "Optional subdirectory under Desktop root; defaults to Desktop/<slugified-name>",
+                            "description": "Optional subdirectory under the projects root; defaults to <projects-root>/<slugified-name>",
                         },
                     },
                     "required": ["name"],

@@ -82,7 +82,7 @@ class ConversationHandler:
         # nothing without the prior turn that explained what "that" was).
         self.session_manager = session_manager or SessionManager()
         self.config.eleven_labs_api_key = self.config.eleven_labs_api_key or os.environ.get("ELEVEN_API_KEY")
-        self.config.eleven_labs_voice_id = self.config.eleven_labs_voice_id or os.environ.get("JARVIS_VOICE_ID", "LE42bqYwZicKpZRastCO")
+        self.config.eleven_labs_voice_id = self.config.eleven_labs_voice_id or os.environ.get("JARVIS_VOICE_ID")
         self.config.eleven_model_id = os.environ.get("ELEVEN_MODEL_ID", self.config.eleven_model_id)
         self.config.tts_mode = os.environ.get("JARVIS_TTS_MODE", self.config.tts_mode).strip().lower() or "auto"
         self.tool_executor = ToolExecutor()
@@ -97,8 +97,8 @@ class ConversationHandler:
         self._tts_cache_dir = Path(os.environ.get("JARVIS_TTS_CACHE_DIR", "/tmp/jarvis_tts_cache"))
         self._tts_cache_dir.mkdir(parents=True, exist_ok=True)
 
-        if self.config.enable_tts and not self.config.eleven_labs_api_key:
-            logger.warn("TTS enabled but ELEVEN_API_KEY not set - will use macOS say command as fallback")
+        if self.config.enable_tts and not (self.config.eleven_labs_api_key and self.config.eleven_labs_voice_id):
+            logger.warn("TTS enabled but ELEVEN_API_KEY/JARVIS_VOICE_ID not set - will use macOS say command as fallback")
 
     async def handle_text_input(self, text: str, llm_engine: ClaudeEngine, session_id: str = "default") -> str:
         # ConversationHandler owns session history end-to-end -- append the
@@ -249,7 +249,7 @@ class ConversationHandler:
             return
 
         use_eleven = self.config.tts_mode == "eleven" or (
-            self.config.tts_mode == "auto" and bool(self.config.eleven_labs_api_key)
+            self.config.tts_mode == "auto" and bool(self.config.eleven_labs_api_key and self.config.eleven_labs_voice_id)
         )
 
         async with self._speak_lock:

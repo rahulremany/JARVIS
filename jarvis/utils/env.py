@@ -33,7 +33,7 @@ def load_env() -> EnvConfig:
         port=port,
         anthropic_api_key=os.environ.get("ANTHROPIC_API_KEY", ""),
         eleven_api_key=os.environ.get("ELEVEN_API_KEY", ""),
-        jarvis_voice_id=os.environ.get("JARVIS_VOICE_ID", "LE42bqYwZicKpZRastCO"),
+        jarvis_voice_id=os.environ.get("JARVIS_VOICE_ID", ""),
     )
 
     for label, value in (

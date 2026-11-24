@@ -10,7 +10,7 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const REPO_ROOT = path.join(__dirname, '..');
 const BACKEND_URL = process.env.BACKEND_URL || 'http://127.0.0.1:3000';
 const WEATHER_API_KEY = process.env.WEATHER_API_KEY || '';
-const WEATHER_CITY = process.env.WEATHER_CITY || 'Quezon City,PH';
+const WEATHER_CITY = process.env.WEATHER_CITY || 'London,GB';
 const FITNESS_BACKEND_URL = process.env.FITNESS_BACKEND_URL || 'http://127.0.0.1:8000';
 const FITNESS_FRONTEND_URL = process.env.FITNESS_FRONTEND_URL || 'http://127.0.0.1:5173';
 // Matches wake_system_integrated.py's self.wake_notify_url -- the voice

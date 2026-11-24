@@ -26,15 +26,15 @@ def test_engine_selector_composes_profile_and_intent_context(tmp_path: Path):
 
     selector = EngineSelector(claude_engine=DummyEngine())
     selector.profile_store.update(
-        name="Rahul",
-        goals=["build camera mouse"],
+        name="Ada",
+        goals=["build weather station"],
         constraints=["minimal_changes"],
     )
 
     prompt = selector._compose_system_prompt("help me debug code and run tests")
     assert "User Profile Context" in prompt
-    assert "Rahul" in prompt
-    assert "build camera mouse" in prompt
+    assert "Ada" in prompt
+    assert "build weather station" in prompt
     assert "Interpreted Intent" in prompt
     assert "software_engineering" in prompt
 

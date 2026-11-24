@@ -5,7 +5,7 @@
 
   Setup:
     1. cp scripts/com.jarvis.dailybriefing.plist.example ~/Library/LaunchAgents/com.jarvis.dailybriefing.plist
-    2. Edit the two /Users/rahulremany/Desktop/JARVIS paths below if your checkout lives elsewhere.
+    2. Replace /path/to/JARVIS below with the absolute path to your checkout.
     3. launchctl load ~/Library/LaunchAgents/com.jarvis.dailybriefing.plist
 
   JARVIS's main server (jarvis/main.py) must already be running for the
@@ -19,7 +19,7 @@
   <key>ProgramArguments</key>
   <array>
     <string>/bin/bash</string>
-    <string>/Users/rahulremany/Desktop/JARVIS/scripts/daily_briefing.sh</string>
+    <string>/path/to/JARVIS/scripts/daily_briefing.sh</string>
   </array>
 
   <key>StartCalendarInterval</key>
@@ -31,8 +31,8 @@
   </dict>
 
   <key>StandardOutPath</key>
-  <string>/Users/rahulremany/Desktop/JARVIS/.jarvis_state/daily_briefing.log</string>
+  <string>/path/to/JARVIS/.jarvis_state/daily_briefing.log</string>
   <key>StandardErrorPath</key>
-  <string>/Users/rahulremany/Desktop/JARVIS/.jarvis_state/daily_briefing.err.log</string>
+  <string>/path/to/JARVIS/.jarvis_state/daily_briefing.err.log</string>
 </dict>
 </plist>

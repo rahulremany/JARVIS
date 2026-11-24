@@ -23,6 +23,7 @@ share/python-wheels/
 MANIFEST
 
 # Virtual Environment
+.venv/
 jarvis_env/
 venv/
 env/
@@ -77,3 +78,6 @@ jarvis/services/fitness/.env
 jarvis/services/fitness/.garmin_tokens/
 frontend/fitness/.env
 frontend/fitness/dist/
+
+# Local runtime state (profile, projects, caches) -- per-user, never committed
+.jarvis_state/
